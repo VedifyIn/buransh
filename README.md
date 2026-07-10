@@ -4,8 +4,8 @@ A minimal Astro starter kit featuring a custom daisyUI/Tailwind theme, automated
 
 ## ⚡ Tech Stack
 
-* **Astro 🚀**: Core web framework.
-* **Tailwind CSS + daisyUI 🎨**: Design system and theme engine.
-* **SEO 🔍**: Built-in JSON-LD structure mapping.
-* **PWA 📱**: Pre-configured offline service worker.
-* **AI Engine 🤖**: Local content auditing scripts.
+- **Astro 🚀**: Core web framework.
+- **Tailwind CSS + daisyUI 🎨**: Design system and theme engine.
+- **SEO 🔍**: Built-in JSON-LD structure mapping.
+- **PWA 📱**: Pre-configured offline service worker.
+- **AI Engine 🤖**: Local content auditing scripts.

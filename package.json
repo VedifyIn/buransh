@@ -1,20 +1,38 @@
 {
-  "name": "buransh",
-  "private": true,
+  "name": "@vedify/buransh",
+  "version": "0.0.1",
+  "author": "Vaidic Joshi",
+  "license": "AGPL-3.0-only",
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "check-types": "turbo run check-types"
+    "format": "prettier --write \"**/*.{ts,tsx,astro,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,astro,json,md}\"",
+    "check-types": "turbo run check-types",
+    "check": "pnpm run format:check && pnpm run lint && pnpm run check-types",
+    "fix": "pnpm run format && pnpm run lint -- --fix",
+    "test": "turbo run test",
+    "prepare": "husky"
   },
   "devDependencies": {
+    "@commitlint/cli": "^21.2.1",
+    "@commitlint/config-conventional": "^21.2.0",
+    "@vedify/eslint-config": "workspace:*",
+    "eslint": "^10.5.0",
+    "eslint-plugin-astro": "^2.0.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.8",
     "prettier": "^3.7.4",
-    "turbo": "^2.10.4",
-    "typescript": "5.9.2"
+    "prettier-plugin-astro": "^0.14.1",
+    "turbo": "^2.9.18",
+    "typescript": "5.9.2",
+    "typescript-eslint": "^8.62.0",
+    "vitest": "^4.1.9",
+    "wrangler": "^4.14.0"
   },
-  "packageManager": "pnpm@9.0.0",
+  "packageManager": "pnpm@11.8.0",
   "engines": {
-    "node": ">=18"
+    "node": ">=26"
   }
 }

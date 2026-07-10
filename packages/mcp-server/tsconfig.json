@@ -1,4 +1,5 @@
 {
-  "extends": "@vedify/typescript-config/base.json",
-  "include": ["src"]
+  "extends": ["@vedify/typescript-config/base.json", "astro/tsconfigs/strict"],
+  "include": [".astro/types.d.ts", "**/*"],
+  "exclude": ["dist"]
 }
