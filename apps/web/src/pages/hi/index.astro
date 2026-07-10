@@ -1,0 +1,25 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import Header from '../../components/Header.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
+---
+
+<!doctype html>
+<html lang="hi">
+  <head>
+    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+  </head>
+  <body>
+    <Header locale="hi" />
+    <main>
+      <h1>नमस्ते, अंतरिक्ष यात्री!</h1>
+      <p>
+        यह <a href="https://astro.build/">Astro</a> ब्लॉग स्टार्टर टेम्पलेट का आधिकारिक हिंदी संस्करण
+        है। यह टेम्पलेट किसी भी व्यक्ति के ल�ए एक हल्का, न्यूनतम-शैली वाला प्रारंभिक बिंदु है जो व्यक्तिगत
+        वेबसाइट, ब्लॉग या पोर्टफोलियो बनाना चाहता है।
+      </p>
+    </main>
+    <Footer />
+  </body>
+</html>

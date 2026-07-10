@@ -18,7 +18,7 @@ trailingSlash: never
 #   "vercel"     — deploys to Vercel Edge / Node
 #   "static"     — no adapter, pure static export (default if omitted)
 # -----------------------------------------------------------------------------
-server: cloudflare
+server: vercel
 
 # -----------------------------------------------------------------------------
 # Progressive Web App (PWA) — powered by @vite-pwa/astro

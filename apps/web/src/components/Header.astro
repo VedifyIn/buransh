@@ -1,15 +1,23 @@
 ---
 import { SITE_TITLE } from '../consts';
 import HeaderLink from './HeaderLink.astro';
+import { useTranslations } from '../utils/i18n';
+
+interface Props {
+  locale?: string;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
 ---
 
 <header>
   <nav>
     <h2><a href="/">{SITE_TITLE}</a></h2>
     <div class="internal-links">
-      <HeaderLink href="/">Home</HeaderLink>
-      <HeaderLink href="/blog">Blog</HeaderLink>
-      <HeaderLink href="/about">About</HeaderLink>
+      <HeaderLink href="/">{t('nav.home')}</HeaderLink>
+      <HeaderLink href="/blog">{t('nav.contact')}</HeaderLink>
+      <HeaderLink href="/about">{t('nav.about')}</HeaderLink>
     </div>
     <div class="social-links">
       <a href="https://m.webtoo.ls/@astro" target="_blank">

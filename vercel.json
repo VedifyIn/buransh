@@ -1,0 +1,8 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "astro",
+  "installCommand": "pnpm install --no-frozen-lockfile",
+  "buildCommand": "pnpm build",
+  "outputDirectory": "apps/web/.vercel/output",
+  "devCommand": "PORT=$PORT pnpm --filter @vedify/web dev"
+}
