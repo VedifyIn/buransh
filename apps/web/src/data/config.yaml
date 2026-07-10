@@ -1,0 +1,154 @@
+# =============================================================================
+# Site Configuration
+# Central config for Astro build, integrations, fonts, and PWA.
+# All values are read by astro.config.mjs at build time.
+# =============================================================================
+
+# Production URL (used as Astro `site` and canonical base)
+site: https://buransh.labs.vedify.in
+
+# Append trailing slash to URLs: "always" | "never" | "ignore"
+trailingSlash: never
+
+# -----------------------------------------------------------------------------
+# Server / Deployment target
+#
+# Controls which Astro adapter is used (or none for pure static).
+#   "cloudflare" — deploys to Cloudflare Workers (requires wrangler.jsonc)
+#   "vercel"     — deploys to Vercel Edge / Node
+#   "static"     — no adapter, pure static export (default if omitted)
+# -----------------------------------------------------------------------------
+server: cloudflare
+
+# -----------------------------------------------------------------------------
+# Progressive Web App (PWA) — powered by @vite-pwa/astro
+# -----------------------------------------------------------------------------
+pwa:
+  # Service worker update strategy: "prompt" asks user, "autoUpdate" applies silently
+  registerType: autoUpdate
+
+  # Web App Manifest — appears when user installs the PWA
+  manifest:
+    name: Buransh
+    short_name: Buransh
+    description: A SEO natice Astro Theme
+    theme_color: '#C17A2E'
+    background_color: '#FAF7F2'
+    display: standalone
+    icons:
+      - src: /icon-192.png
+        sizes: 192x192
+        type: image/png
+      - src: /icon-512.png
+        sizes: 512x512
+        type: image/png
+
+  # Workbox precaching — controls what assets the service worker caches offline
+  workbox:
+    globPatterns:
+      - '**/*.{css,js,html,svg,png,woff2}'
+    navigateFallback: /offline
+
+# -----------------------------------------------------------------------------
+# Partytown — offloads third-party scripts (e.g. Google Tag Manager) to a web worker
+# -----------------------------------------------------------------------------
+partytown:
+  forward:
+    - dataLayer.push
+
+# -----------------------------------------------------------------------------
+# Markdown / Shiki syntax highlighting themes
+# -----------------------------------------------------------------------------
+markdown:
+  shikiConfig:
+    themes:
+      light: github-light
+      dark: github-dark
+
+# -----------------------------------------------------------------------------
+# Fonts
+#
+# `defaultFont` controls which font is:
+#   1. Preloaded via <Font preload /> in BaseHead.astro
+#   2. Applied as the body default via the --font-body CSS variable
+#
+# To switch the site-wide default font, change the value below and rebuild.
+# All fonts declared here are available via their CSS variables (e.g. var(--font-creepster)).
+# -----------------------------------------------------------------------------
+defaultFont: Atkinson
+
+fonts:
+  # Atkinson Hyperlegible — clean, highly legible sans-serif (default body font)
+  - name: Atkinson
+    cssVariable: '--font-atkinson'
+    fallbacks:
+      - sans-serif
+    variants:
+      - src:
+          - ./src/assets/fonts/atkinson-regular.woff2
+        weight: 400
+        style: normal
+        display: swap
+      - src:
+          - ./src/assets/fonts/atkinson-bold.woff2
+        weight: 700
+        style: normal
+        display: swap
+
+  # Creepster — Halloween / spooky display font
+  - name: Creepster
+    cssVariable: '--font-creepster'
+    fallbacks:
+      - cursive
+    variants:
+      - src:
+          - ./src/assets/fonts/creepster.woff2
+        weight: 400
+        style: normal
+        display: swap
+
+  # Pacifico — cursive / script display font
+  - name: Pacifico
+    cssVariable: '--font-pacifico'
+    fallbacks:
+      - cursive
+    variants:
+      - src:
+          - ./src/assets/fonts/pacifico.woff2
+        weight: 400
+        style: normal
+        display: swap
+
+  # Caveat — hand-written / child-like display font
+  - name: Caveat
+    cssVariable: '--font-caveat'
+    fallbacks:
+      - cursive
+    variants:
+      - src:
+          - ./src/assets/fonts/caveat-regular.woff2
+        weight: 400
+        style: normal
+        display: swap
+      - src:
+          - ./src/assets/fonts/caveat-bold.woff2
+        weight: 700
+        style: normal
+        display: swap
+
+  # Fredoka — rounded, playful display font
+  - name: Fredoka
+    cssVariable: '--font-fredoka'
+    fallbacks:
+      - sans-serif
+    variants:
+      - src:
+          - ./src/assets/fonts/fredoka-regular.woff2
+        weight: 400
+        style: normal
+        display: swap
+      - src:
+          - ./src/assets/fonts/fredoka-bold.woff2
+        weight: 700
+        style: normal
+        display: swap

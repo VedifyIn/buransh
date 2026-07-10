@@ -80,6 +80,10 @@ coverage/
 # --- Vercel ---
 .vercel
 
+# --- Cloudflare ---
+.wrangler/
+.dev.vars
+
 # --- Misc ---
 lib-cov
 .grunt
