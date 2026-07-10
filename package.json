@@ -23,13 +23,14 @@
     "eslint-plugin-astro": "^2.0.0",
     "husky": "^9.1.7",
     "lint-staged": "^17.0.8",
-    "prettier": "^3.7.4",
+    "prettier": "^3.9.5",
     "prettier-plugin-astro": "^0.14.1",
     "turbo": "^2.9.18",
-    "typescript": "5.9.2",
+    "@typescript/native": "npm:typescript@^7.0.2",
+    "typescript": "npm:@typescript/typescript6@^6.0.2",
     "typescript-eslint": "^8.62.0",
     "vitest": "^4.1.9",
-    "wrangler": "^4.14.0"
+    "wrangler": "^4.109.0"
   },
   "packageManager": "pnpm@11.8.0",
   "engines": {
