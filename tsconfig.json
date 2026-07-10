@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "paths": {
+      "@vedify/schema": ["./packages/schema/src"],
+      "@vedify/guardrail": ["./packages/guardrail/src"],
+      "@vedify/mcp-server": ["./packages/mcp-server/src"]
+    }
+  },
+  "files": []
+}

@@ -1,0 +1,19 @@
+{
+  "name": "@vedify/mcp-server",
+  "version": "0.0.1",
+  "private": true,
+  "author": "Vaidic Joshi",
+  "license": "AGPL-3.0-only",
+  "type": "module",
+  "scripts": {
+    "lint": "eslint .",
+    "check-types": "tsc --noEmit"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "devDependencies": {
+    "@vedify/eslint-config": "workspace:*",
+    "@vedify/typescript-config": "workspace:*"
+  }
+}
