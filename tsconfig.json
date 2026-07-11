@@ -4,7 +4,8 @@
     "paths": {
       "@vedify/schema": ["./packages/schema/src"],
       "@vedify/guardrail": ["./packages/guardrail/src"],
-      "@vedify/mcp-server": ["./packages/mcp-server/src"]
+      "@vedify/mcp-server": ["./packages/mcp-server/src"],
+      "@vedify/db-adapters": ["./packages/db-adapters/src"]
     }
   },
   "files": []

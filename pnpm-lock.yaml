@@ -121,6 +121,15 @@ importers:
         specifier: ^4.109.0
         version: 4.109.0
 
+  packages/db-adapters:
+    devDependencies:
+      '@vedify/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
+      '@vedify/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+
   packages/eslint-config:
     dependencies:
       eslint:
