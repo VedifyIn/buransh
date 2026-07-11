@@ -5,20 +5,41 @@
   "author": "Vaidic Joshi",
   "license": "AGPL-3.0-only",
   "type": "module",
+  "sideEffects": false,
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./enums": "./src/enums.ts",
+    "./base": "./src/base.ts",
+    "./nested": "./src/nested.ts",
+    "./variants": "./src/variants/index.ts",
+    "./schema-library": "./src/schema-library/index.ts",
+    "./constants": "./src/constants/index.ts",
+    "./partials": "./src/partials/index.ts",
+    "./composer": "./composer/index.ts",
+    "./validators": "./validators/index.ts",
+    "./mappings": "./src/mappings/index.ts",
+    "./errors": "./errors/index.ts",
+    "./sections": "./sections/index.ts",
+    "./schemas/event": "./schemas/content/event/index.ts",
+    "./schemas/supporting": "./schemas/supporting/organization-fragment.ts"
   },
   "scripts": {
     "check-types": "tsc --noEmit",
     "lint": "eslint .",
-    "test": "vitest run --coverage --passWithNoTests"
+    "test": "vitest run --coverage --passWithNoTests",
+    "test:watch": "vitest --passWithNoTests",
+    "test:coverage": "vitest run --coverage --passWithNoTests",
+    "validate": "tsx scripts/validate-schemas.ts",
+    "generate": "tsx scripts/generate-all-schemas.ts",
+    "report": "tsx scripts/schema-report.ts"
   },
   "dependencies": {
-    "zod": "^3.24.0"
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@vedify/eslint-config": "workspace:*",
     "@vedify/typescript-config": "workspace:*",
+    "tsx": "^4.22.4",
     "vitest": "^4.1.9"
   }
 }

@@ -1,4 +1,15 @@
 {
   "extends": "@vedify/typescript-config/base.json",
-  "include": ["src", "vitest.config.ts"]
+  "include": [
+    "src",
+    "composer",
+    "constants",
+    "errors",
+    "schemas",
+    "sections",
+    "validators",
+    "__tests__",
+    "scripts",
+    "vitest.config.ts"
+  ]
 }
