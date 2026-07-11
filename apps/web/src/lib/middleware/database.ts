@@ -15,7 +15,7 @@ const activeProvider =
 const dbInstance = getDbAdapter(activeProvider);
 
 // 3. This runs automatically on every single incoming API or page request
-export const onRequest = defineMiddleware((context, next) => {
+export const databaseMiddleware = defineMiddleware((context, next) => {
   context.locals.db = dbInstance;
   return next();
 });

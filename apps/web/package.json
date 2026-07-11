@@ -24,7 +24,6 @@
     "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "^3.7.3",
     "@tailwindcss/vite": "^4.3.1",
-    "@vedify/eslint-config": "workspace:*",
     "@vedify/typescript-config": "workspace:*",
     "@vite-pwa/astro": "^1.2.0",
     "@vitest/coverage-v8": "^4.1.9",
