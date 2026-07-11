@@ -103,4 +103,3 @@ node-waf
 !.yarn/versions
 *.tgz
 .yarn-integrity
-.env*
