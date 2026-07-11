@@ -1,7 +1,19 @@
 -- ====================================================================
--- ASTRO STATIC SITE — SUPABASE SCHEMA (FIXED)
--- Supports: claps, ratings, bookmarks, threaded comments
--- for logged-in users AND anonymous (device-id based) users
+-- ASTRO STATIC SITE — SUPABASE SCHEMA (SUPERSEDED)
+-- ====================================================================
+-- This file is a reference copy. The canonical source of truth is now
+-- the migration files in ./migrations/:
+--
+--   01_base_tables.sql           builds, posts
+--   02_user_tables.sql           user_preferences
+--   03_interaction_tables.sql    user_post_interactions
+--   04_comment_tables.sql        post_comments
+--   05_highlight_tables.sql      post_highlights
+--   06_indexes_and_triggers.sql  indexes, triggers, lifecycle
+--   07_rls.sql                   row level security policies
+--   08_views.sql                 public_post_comments_view
+--
+-- Apply with: supabase db reset (local) or via Supabase Dashboard.
 -- ====================================================================
 
 -- ====================================================================
