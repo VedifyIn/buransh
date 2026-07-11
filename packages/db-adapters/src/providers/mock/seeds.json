@@ -1,0 +1,47 @@
+[
+  {
+    "id": "1",
+    "contentId": "getting-started-with-astro",
+    "parentId": null,
+    "userName": "Alice Johnson",
+    "userAvatar": null,
+    "commentText": "Great intro, exactly what I needed to get up and running!",
+    "createdAt": "2026-06-01T14:30:00Z"
+  },
+  {
+    "id": "2",
+    "contentId": "getting-started-with-astro",
+    "parentId": "1",
+    "userName": "Bob Martinez",
+    "userAvatar": null,
+    "commentText": "Agreed, the file-based routing section saved me a ton of time.",
+    "createdAt": "2026-06-01T16:05:00Z"
+  },
+  {
+    "id": "3",
+    "contentId": "getting-started-with-astro",
+    "parentId": null,
+    "userName": "Guest_92",
+    "userAvatar": null,
+    "commentText": "Does this still work with the latest Astro release?",
+    "createdAt": "2026-06-02T09:15:00Z"
+  },
+  {
+    "id": "4",
+    "contentId": "spicy-thai-basil-chicken",
+    "parentId": null,
+    "userName": "Carol Nguyen",
+    "userAvatar": null,
+    "commentText": "Used two Thai chilies instead of three and it still had great flavor.",
+    "createdAt": "2026-06-03T19:20:00Z"
+  },
+  {
+    "id": "5",
+    "contentId": "spicy-thai-basil-chicken",
+    "parentId": "4",
+    "userName": "HomeCook22",
+    "userAvatar": null,
+    "commentText": "Good tip, my kids can't handle the full spice level either.",
+    "createdAt": "2026-06-03T20:00:00Z"
+  }
+]

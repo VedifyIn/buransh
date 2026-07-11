@@ -1,3 +1,3 @@
-import config from '@vedify/eslint-config';
+import baseConfig from '@vedify/eslint-config';
 
-export default config;
+export default [...baseConfig];
