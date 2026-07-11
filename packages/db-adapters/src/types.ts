@@ -29,6 +29,35 @@ export interface ClapResult {
   totalClaps: number;
 }
 
+export interface Highlight {
+  id: string;
+  postId: string;
+  userId?: string;
+  anonId?: string;
+  highlightedText?: string;
+  note?: string;
+  selectorPrefix?: string;
+  selectorSuffix?: string;
+  startOffset?: number;
+  endOffset?: number;
+  color: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SaveHighlightInput {
+  postId: string;
+  highlightedText?: string;
+  note?: string;
+  selectorPrefix?: string;
+  selectorSuffix?: string;
+  startOffset?: number;
+  endOffset?: number;
+  color?: string;
+  anonId?: string;
+  userId?: string;
+}
+
 export interface DatabaseProvider {
   /**
    * Save a 1-5 rating for a piece of content on behalf of a logged-in
@@ -58,4 +87,40 @@ export interface DatabaseProvider {
   getComments(contentId: string): Promise<CommentNode[]>;
 
   postComment(contentId: string, data: PostCommentInput, userId?: string): Promise<CommentNode>;
+
+  /**
+   * Toggle the bookmark state for a post. Returns the new state.
+   */
+  toggleBookmark(
+    contentId: string,
+    anonId?: string,
+    userId?: string,
+  ): Promise<SaveResult & { isBookmarked: boolean }>;
+
+  /**
+   * Toggle the like state for a post. Returns the new state.
+   */
+  toggleLike(
+    contentId: string,
+    anonId?: string,
+    userId?: string,
+  ): Promise<SaveResult & { isLiked: boolean }>;
+
+  /**
+   * Mark a post as read for this actor. Idempotent — calling again
+   * is a no-op (the timestamp is only set on the first call).
+   */
+  markAsRead(contentId: string, anonId?: string, userId?: string): Promise<SaveResult>;
+
+  /**
+   * Save a highlight (text selection + optional note) for a post.
+   * If an existing highlight matches the same offsets/prefix, it
+   * updates the note/color instead of creating a duplicate.
+   */
+  saveHighlight(input: SaveHighlightInput): Promise<SaveResult & { highlight?: Highlight }>;
+
+  /**
+   * Get all highlights for a post, scoped to this actor.
+   */
+  getHighlights(contentId: string, anonId?: string, userId?: string): Promise<Highlight[]>;
 }

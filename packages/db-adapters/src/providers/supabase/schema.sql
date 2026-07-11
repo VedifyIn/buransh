@@ -332,10 +332,14 @@ execute function update_posts_deletion_status();
 -- 9. PERFORMANCE LOOKUP INDEXES
 -- ====================================================================
 create index idx_user_bookmarks
-  on user_post_interactions (user_id, is_bookmarked, bookmarked_at desc, post_id);
+  on user_post_interactions (user_id, bookmarked_at desc, post_id)
+  where is_bookmarked = true;
 
-create index idx_post_interactions_lookup
-  on user_post_interactions (post_id);
+-- idx_post_interactions_lookup dropped: uq_interaction_actor (post_id, actor_id)
+-- already covers post_id-only lookups via leftmost-prefix scan.
+
+create index idx_leaderboard_aggregates
+  on user_post_interactions (post_id, claps, rating, is_liked);
 
 create index idx_user_preferences_meta
   on user_preferences using gin (meta);
@@ -371,8 +375,8 @@ create policy "non-deleted posts are publicly readable"
 -- user_preferences: strictly private to the owning logged-in user
 create policy "users manage their own preferences"
   on user_preferences for all
-  using (auth.uid() = user_id)
-  with check (auth.uid() = user_id);
+  using ((select auth.uid()) = user_id)
+  with check ((select auth.uid()) = user_id);
 
 -- user_post_interactions:
 -- - counts (likes/ratings) are public to read
@@ -385,8 +389,8 @@ create policy "interactions are publicly readable"
 
 create policy "logged-in users manage their own interactions"
   on user_post_interactions for all
-  using (auth.uid() = user_id)
-  with check (auth.uid() = user_id);
+  using ((select auth.uid()) = user_id)
+  with check ((select auth.uid()) = user_id);
 
 create policy "anonymous interactions writable without login"
   on user_post_interactions for all
@@ -404,25 +408,25 @@ create policy "approved comments are publicly readable"
 create policy "anyone can post a comment"
   on post_comments for insert
   with check (
-    (user_id is not null and user_id = auth.uid())
+    (user_id is not null and user_id = (select auth.uid()))
     or (user_id is null and anon_name is not null)
   );
 
 create policy "logged-in users edit their own comments"
   on post_comments for update
-  using (auth.uid() = user_id)
-  with check (auth.uid() = user_id);
+  using ((select auth.uid()) = user_id)
+  with check ((select auth.uid()) = user_id);
 
 create policy "logged-in users delete their own comments"
   on post_comments for delete
-  using (auth.uid() = user_id);
+  using ((select auth.uid()) = user_id);
 
 -- post_highlights: private by default — only the owning actor can
 -- see or manage their own highlights/notes
 create policy "logged-in users manage their own highlights"
   on post_highlights for all
-  using (auth.uid() = user_id)
-  with check (auth.uid() = user_id);
+  using ((select auth.uid()) = user_id)
+  with check ((select auth.uid()) = user_id);
 
 -- ⚠️ SECURITY NOTE — read before using anon_id here: unlike the
 -- "public counts" tables above, highlights/notes are private free
@@ -448,7 +452,8 @@ create policy "anonymous highlights usable without login"
 -- ====================================================================
 -- 11. UNIFIED PUBLIC COMMENTS VIEW
 -- ====================================================================
-create or replace view public_post_comments_view as
+create or replace view public_post_comments_view
+  with (security_invoker = true) as
 select
   c.id,
   c.post_id,

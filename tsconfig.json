@@ -8,5 +8,5 @@
       "@vedify/db-adapters": ["./packages/db-adapters/src"]
     }
   },
-  "files": []
+  "files": ["index.ts", "types.ts"]
 }

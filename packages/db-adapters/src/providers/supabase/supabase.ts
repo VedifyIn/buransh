@@ -1,5 +1,23 @@
 import { createClient } from '@supabase/supabase-js';
-import type { DatabaseProvider, CommentNode } from '../../types';
+import type { DatabaseProvider, CommentNode, Highlight } from '../../types';
+
+function rowToHighlight(row: Record<string, unknown>): Highlight {
+  return {
+    id: String(row.id),
+    postId: row.post_id as string,
+    userId: row.user_id as string | undefined,
+    anonId: row.anon_id as string | undefined,
+    highlightedText: row.highlighted_text as string | undefined,
+    note: row.note as string | undefined,
+    selectorPrefix: row.selector_prefix as string | undefined,
+    selectorSuffix: row.selector_suffix as string | undefined,
+    startOffset: row.start_offset as number | undefined,
+    endOffset: row.end_offset as number | undefined,
+    color: (row.color as string) || 'yellow',
+    createdAt: row.created_at as string,
+    updatedAt: row.updated_at as string,
+  };
+}
 
 /**
  * IMPORTANT: this factory takes an optional user access token so that
@@ -122,6 +140,124 @@ export function getSupabaseDB(accessToken?: string): DatabaseProvider {
         commentText: row.content,
         createdAt: row.created_at,
       };
+    },
+
+    async toggleBookmark(contentId, anonId, userId) {
+      const isAnon = !userId;
+      // read current state
+      const { data: existing } = await supabase
+        .from('user_post_interactions')
+        .select('is_bookmarked')
+        .eq('post_id', contentId)
+        .eq('actor_id', userId || anonId)
+        .maybeSingle();
+
+      const newState = !(existing?.is_bookmarked ?? false);
+      const { error } = await supabase.from('user_post_interactions').upsert(
+        {
+          post_id: contentId,
+          user_id: userId || null,
+          anon_id: isAnon ? anonId : null,
+          is_bookmarked: newState,
+          bookmarked_at: newState ? new Date().toISOString() : null,
+        },
+        { onConflict: 'post_id,actor_id' },
+      );
+      return { success: !error, isBookmarked: newState, error: error?.message };
+    },
+
+    async toggleLike(contentId, anonId, userId) {
+      const isAnon = !userId;
+      const { data: existing } = await supabase
+        .from('user_post_interactions')
+        .select('is_liked')
+        .eq('post_id', contentId)
+        .eq('actor_id', userId || anonId)
+        .maybeSingle();
+
+      const newState = !(existing?.is_liked ?? false);
+      const { error } = await supabase.from('user_post_interactions').upsert(
+        {
+          post_id: contentId,
+          user_id: userId || null,
+          anon_id: isAnon ? anonId : null,
+          is_liked: newState,
+        },
+        { onConflict: 'post_id,actor_id' },
+      );
+      return { success: !error, isLiked: newState, error: error?.message };
+    },
+
+    async markAsRead(contentId, anonId, userId) {
+      const isAnon = !userId;
+      const { error } = await supabase.from('user_post_interactions').upsert(
+        {
+          post_id: contentId,
+          user_id: userId || null,
+          anon_id: isAnon ? anonId : null,
+          is_read: true,
+          read_at: new Date().toISOString(),
+        },
+        { onConflict: 'post_id,actor_id' },
+      );
+      return { success: !error, error: error?.message };
+    },
+
+    async saveHighlight(input) {
+      const isAnon = !input.userId;
+      // check for existing highlight at same offsets
+      const { data: existing } = await supabase
+        .from('post_highlights')
+        .select('*')
+        .eq('post_id', input.postId)
+        .eq('start_offset', input.startOffset ?? null)
+        .eq('end_offset', input.endOffset ?? null)
+        .eq(isAnon ? 'anon_id' : 'user_id', isAnon ? input.anonId : input.userId)
+        .maybeSingle();
+
+      if (existing) {
+        const { data, error } = await supabase
+          .from('post_highlights')
+          .update({ note: input.note, color: input.color || existing.color })
+          .eq('id', existing.id)
+          .select('*')
+          .single();
+        if (error) return { success: false, error: error.message };
+        return { success: true, highlight: rowToHighlight(data) };
+      }
+
+      const { data, error } = await supabase
+        .from('post_highlights')
+        .insert({
+          post_id: input.postId,
+          user_id: input.userId || null,
+          anon_id: isAnon ? input.anonId : null,
+          highlighted_text: input.highlightedText,
+          note: input.note,
+          selector_prefix: input.selectorPrefix,
+          selector_suffix: input.selectorSuffix,
+          start_offset: input.startOffset,
+          end_offset: input.endOffset,
+          color: input.color || 'yellow',
+        })
+        .select('*')
+        .single();
+
+      if (error) return { success: false, error: error.message };
+      return { success: true, highlight: rowToHighlight(data) };
+    },
+
+    async getHighlights(contentId, anonId, userId) {
+      const isAnon = !userId;
+      const { data, error } = await supabase
+        .from('post_highlights')
+        .select('*')
+        .eq('post_id', contentId)
+        .eq(isAnon ? 'anon_id' : 'user_id', isAnon ? anonId : userId)
+        .order('created_at', { ascending: true });
+
+      if (error || !data) return [];
+      return data.map(rowToHighlight);
     },
   };
 }
