@@ -31,7 +31,7 @@ pwa:
   manifest:
     name: Buransh
     short_name: Buransh
-    description: A SEO natice Astro Theme
+    description: A SEO native Astro Theme
     theme_color: '#C17A2E'
     background_color: '#FAF7F2'
     display: standalone

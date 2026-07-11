@@ -1,21 +1,14 @@
 import { defineMiddleware } from 'astro:middleware';
 import { getDbAdapter } from '@vedify/db-adapters';
-import fs from 'node:fs';
-import path from 'node:path';
 
-// 1. Read your config.yaml file safely on server startup
-const yamlPath = path.resolve(process.cwd(), 'src/data/config.yaml');
-const yamlString = fs.readFileSync(yamlPath, 'utf8');
+// Read database provider from environment variable (set at build time via config.yaml)
+// This avoids node:fs which doesn't work on Cloudflare Workers
+const activeProvider = import.meta.env.DATABASE_PROVIDER || 'mock';
 
-// Parse out your database tracking variable via a quick regex match
-const activeProvider =
-  yamlString.match(/^databaseProvider:\s*["']?([^"'\s]+)["']?/m)?.[1] || 'mock';
-
-// 2. Initialize your plug-and-play database package
-const dbInstance = getDbAdapter(activeProvider);
-
-// 3. This runs automatically on every single incoming API or page request
 export const databaseMiddleware = defineMiddleware((context, next) => {
-  context.locals.db = dbInstance;
+  // Create adapter per-request so Supabase can use the user's access token
+  // For mock provider, this is cheap (just returns the singleton)
+  const accessToken = context.cookies.get('sb-access-token')?.value;
+  context.locals.db = getDbAdapter(activeProvider, accessToken);
   return next();
 });
