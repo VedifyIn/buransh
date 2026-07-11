@@ -7,6 +7,7 @@ interface SiteConfig {
   site: string;
   trailingSlash: 'always' | 'never' | 'ignore';
   server: 'cloudflare' | 'vercel' | 'static';
+  databaseProvider: 'mock' | 'supabase';
 
   pwa: {
     registerType: 'prompt' | 'autoUpdate';

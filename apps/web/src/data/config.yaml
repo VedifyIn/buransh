@@ -152,3 +152,6 @@ fonts:
         weight: 700
         style: normal
         display: swap
+
+# 🔌 Add your dynamic plug-and-play database setting here
+databaseProvider: 'mock' # Or change to "supabase" in your staging/prod environments
