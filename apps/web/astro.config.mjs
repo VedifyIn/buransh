@@ -224,17 +224,6 @@ export default defineConfig({
             transformer: 'lightningcss',
             cssMinify: 'esbuild',
         },
-        rolldownOptions: {
-            external: [
-                // @supabase/supabase-js and its sub-packages import
-                // tslib, which Rolldown can't resolve in pnpm's strict
-                // node_modules. These are server-side only — on a static
-                // site they're never executed in the browser, so we
-                // externalize them instead of bundling.
-                '@supabase/supabase-js',
-                /@supabase\//,
-            ],
-        },
     },
 
     // ---------------------------------------------------------------------------
