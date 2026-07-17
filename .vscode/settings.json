@@ -1,0 +1,43 @@
+{
+  "workbench.colorCustomizations": {},
+
+  // Enable Tailwind CSS IntelliSense inside Astro files
+  "tailwindCSS.includeLanguages": {
+    "astro": "html",
+    "plaintext": "html"
+  },
+
+  // Ensure Tailwind triggers autocomplete correctly
+  "tailwindCSS.emmetCompletions": true,
+
+  // Prevents VS Code from throwing false warnings on Tailwind CSS directives (like @import, @theme, @plugin)
+  "css.customData": [],
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+
+  // Set Prettier as the default formatter for Astro and CSS files
+  "[astro]": {
+    "editor.defaultFormatter": "Astro-build.astro-vscode",
+    "editor.formatOnSave": true
+  },
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+
+  // Editor styling configurations
+  "editor.inlineSuggest.enabled": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "explicit"
+  }
+}

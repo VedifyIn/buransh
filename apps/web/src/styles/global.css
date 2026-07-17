@@ -5,6 +5,7 @@
  */
 
 @import 'tailwindcss';
+@plugin "daisyui";
 
 @theme inline {
   --font-sans: var(--font-body), sans-serif;
