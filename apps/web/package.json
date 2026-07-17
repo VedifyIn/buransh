@@ -18,6 +18,7 @@
     "@vedify/db-adapters": "workspace:*",
     "astro": "^7.0.7",
     "dexie": "^4.4.4",
+    "jose": "^5.10.0",
     "sharp": "^0.35.0"
   },
   "devDependencies": {

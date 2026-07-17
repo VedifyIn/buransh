@@ -1,6 +1,6 @@
 import { randomUUID } from 'crypto';
 import type { BuildPostInput } from 'db-adapters';
-import { BuildTimeSyncService, getDB } from 'db-adapters';
+import { BuildTimeSyncService, createSupabaseClient } from 'db-adapters';
 import { promises as fs } from 'fs';
 import yaml from 'js-yaml';
 import path from 'path';
@@ -16,9 +16,13 @@ function parseFrontmatter(raw: string): Record<string, unknown> {
 async function run() {
   const currentBuildId = randomUUID();
 
-  // 1. Initialize privileged server client connection
-  const dbClient = getDB();
-  const syncService = new BuildTimeSyncService(dbClient);
+  // Build-time sync needs a raw Supabase client (not the DatabaseProvider wrapper)
+  // because it writes directly to posts/builds tables via BuildTimeSyncService
+  const supabase = createSupabaseClient(
+    process.env.SUPABASE_URL || '',
+    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || '',
+  );
+  const syncService = new BuildTimeSyncService(supabase);
 
   // 2. Read renames (optional)
   let renames: { from: string; to: string }[] = [];

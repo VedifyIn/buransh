@@ -2,6 +2,7 @@ export * from './types';
 export { MockDB } from './providers/mock/mock';
 export { getSupabaseDB } from './providers/supabase/supabase';
 export { BuildTimeSyncService, uuid5, DNS_NAMESPACE } from './sync-pipeline';
+export { createClient as createSupabaseClient } from '@supabase/supabase-js';
 
 import { MockDB } from './providers/mock/mock';
 import { getSupabaseDB } from './providers/supabase/supabase';
