@@ -4,13 +4,15 @@
 -- and mark-as-read. The generated actor_id column lets ON CONFLICT
 -- work with a single non-partial unique index.
 --
+-- All tables FK to posts(post_id) — the immutable surrogate key —
+-- so slug renames never drop relations.
 -- ON DELETE: SET NULL (not cascade) — anonymizes the row instead of
 -- deleting it, preserving aggregate counts other users can see.
 -- ====================================================================
 
 create table if not exists user_post_interactions (
   id bigint generated always as identity primary key,
-  post_id text not null references posts(slug) on delete cascade,
+  post_id uuid not null references posts(post_id) on update cascade on delete cascade,
   user_id uuid references auth.users(id) on delete set null,
   anon_id uuid,
 

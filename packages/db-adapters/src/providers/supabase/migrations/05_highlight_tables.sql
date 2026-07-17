@@ -10,7 +10,7 @@
 
 create table if not exists post_highlights (
   id bigint generated always as identity primary key,
-  post_id text not null references posts(slug) on delete cascade,
+  post_id uuid not null references posts(post_id) on update cascade on delete cascade,
   user_id uuid references auth.users(id) on delete cascade,
   anon_id uuid,
 

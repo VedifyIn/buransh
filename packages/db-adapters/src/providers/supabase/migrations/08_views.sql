@@ -27,3 +27,18 @@ select
 from post_comments c
 left join auth.users u on c.user_id = u.id
 where c.is_approved = true;
+
+-- Public post engagement stats. Exposes only aggregates — never
+-- individual actor rows — so it's safe to read with no auth.
+-- security_invoker ensures the view respects the underlying table's
+-- RLS (user_post_interactions has a public SELECT policy).
+create or replace view public_post_stats_view
+  with (security_invoker = true) as
+select
+  post_id,
+  count(*) filter (where is_liked) as total_likes,
+  coalesce(sum(claps), 0) as total_claps,
+  count(*) filter (where rating is not null) as rating_count,
+  coalesce(round(avg(rating) filter (where rating is not null), 2), 0)::numeric(3,2) as avg_rating
+from user_post_interactions
+group by post_id;

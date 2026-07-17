@@ -4,14 +4,17 @@
 -- This file is a reference copy. The canonical source of truth is now
 -- the migration files in ./migrations/:
 --
---   01_base_tables.sql           builds, posts
---   02_user_tables.sql           user_preferences
---   03_interaction_tables.sql    user_post_interactions
---   04_comment_tables.sql        post_comments
---   05_highlight_tables.sql      post_highlights
---   06_indexes_and_triggers.sql  indexes, triggers, lifecycle
---   07_rls.sql                   row level security policies
---   08_views.sql                 public_post_comments_view
+--   01_base_tables.sql             builds, posts (with post_id uuid)
+--   02_user_tables.sql             user_preferences
+--   03_interaction_tables.sql      user_post_interactions
+--   04_comment_tables.sql          post_comments
+--   05_highlight_tables.sql        post_highlights
+--   06_indexes_and_triggers.sql    indexes, triggers, lifecycle
+--   07_rls.sql                     row level security policies
+--   08_views.sql                   public views (comments, stats)
+--   09_atomic_toggle_functions.sql atomic toggle functions (race-free)
+--   10_performance_indexes.sql     performance optimization indexes
+--   11_validation_constraints.sql  validation & rate limiting constraints
 --
 -- Apply with: supabase db reset (local) or via Supabase Dashboard.
 -- ====================================================================
@@ -29,14 +32,24 @@ create table builds (
 
 -- ====================================================================
 -- 2. POSTS TABLE
+-- slug is mutable (renames allowed). post_id is the immutable surrogate
+-- key — computed as uuid_generate_v5(dns_namespace, slug) in the
+-- application layer (sync-pipeline) on first creation, then never changes.
+-- All interaction tables FK to post_id so renames are safe.
 -- ====================================================================
 create table posts (
   slug text primary key,
+  post_id uuid unique not null,
   title text not null,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
   first_release_build_id bigint references builds(id) on delete set null,
   last_seen_build_id bigint references builds(id) on delete set null,
-  is_deleted boolean default false not null
+  is_deleted boolean default false not null,
+
+  -- Interaction Controls: 'enabled' (all), 'disabled' (locked), or 'auth_only' (registered)
+  comments_state text default 'enabled' check (comments_state in ('enabled', 'disabled', 'auth_only')) not null,
+  interactions_state text default 'enabled' check (interactions_state in ('enabled', 'disabled', 'auth_only')) not null,
+  highlights_notes text default 'auth_only' check (highlights_notes in ('enabled', 'disabled', 'auth_only')) not null
 );
 
 -- ====================================================================
@@ -96,7 +109,7 @@ create table user_preferences (
 -- ====================================================================
 create table user_post_interactions (
   id bigint generated always as identity primary key,
-  post_id text not null references posts(slug) on delete cascade,
+  post_id uuid not null references posts(post_id) on update cascade on delete cascade,
   user_id uuid references auth.users(id) on delete set null,
   anon_id uuid, -- client-generated device id, used when user_id is null
 
@@ -156,7 +169,7 @@ create unique index uq_interaction_actor
 -- ====================================================================
 create table post_comments (
   id bigint generated always as identity primary key,
-  post_id text not null references posts(slug) on delete cascade,
+  post_id uuid not null references posts(post_id) on update cascade on delete cascade,
   parent_comment_id bigint,
   user_id uuid references auth.users(id) on delete set null,
   was_registered_user boolean default false not null, -- set once, survives anonymization
@@ -248,7 +261,7 @@ for each row execute function enforce_comment_edit_limit();
 -- ====================================================================
 create table post_highlights (
   id bigint generated always as identity primary key,
-  post_id text not null references posts(slug) on delete cascade,
+  post_id uuid not null references posts(post_id) on update cascade on delete cascade,
   user_id uuid references auth.users(id) on delete cascade,
   anon_id uuid, -- client-generated device id, used when user_id is null
 
@@ -483,3 +496,19 @@ select
 from post_comments c
 left join auth.users u on c.user_id = u.id
 where c.is_approved = true;
+
+-- ====================================================================
+-- 12. PUBLIC POST STATS VIEW
+-- Aggregated engagement stats. Exposes only sums/counts — never
+-- individual actor rows — safe to read with no auth.
+-- ====================================================================
+create or replace view public_post_stats_view
+  with (security_invoker = true) as
+select
+  post_id,
+  count(*) filter (where is_liked) as total_likes,
+  coalesce(sum(claps), 0) as total_claps,
+  count(*) filter (where rating is not null) as rating_count,
+  coalesce(round(avg(rating) filter (where rating is not null), 2), 0)::numeric(3,2) as avg_rating
+from user_post_interactions
+group by post_id;

@@ -1,3 +1,16 @@
+// Interaction state control for posts
+export type InteractionState = 'enabled' | 'disabled' | 'auth_only';
+
+export interface PostMetadata {
+  postId: string;
+  slug: string;
+  title: string;
+  commentsState: InteractionState;
+  interactionsState: InteractionState;
+  highlightsNotes: InteractionState;
+  isDeleted: boolean;
+}
+
 export interface CommentNode {
   id: string;
   contentId: string;
@@ -29,6 +42,13 @@ export interface ClapResult {
   totalClaps: number;
 }
 
+export interface PostStats {
+  totalLikes: number;
+  totalClaps: number;
+  avgRating: number;
+  ratingCount: number;
+}
+
 export interface Highlight {
   id: string;
   postId: string;
@@ -45,6 +65,9 @@ export interface Highlight {
   updatedAt: string;
 }
 
+// Discriminated union for actor identification
+export type ActorId = { type: 'user'; userId: string } | { type: 'anon'; anonId: string };
+
 export interface SaveHighlightInput {
   postId: string;
   highlightedText?: string;
@@ -60,6 +83,12 @@ export interface SaveHighlightInput {
 
 export interface DatabaseProvider {
   /**
+   * Get metadata for a post including interaction state controls.
+   * Used to check if operations are allowed before attempting them.
+   */
+  getPostMetadata(contentId: string): Promise<PostMetadata | null>;
+
+  /**
    * Save a 1-5 rating for a piece of content on behalf of a logged-in
    * user (userId) or an anonymous visitor (anonId — a client-generated
    * UUID, persisted in a cookie/localStorage, NOT an IP address).
@@ -71,7 +100,7 @@ export interface DatabaseProvider {
     userId?: string,
   ): Promise<SaveResult>;
 
-  getRatings(contentId: string): Promise<RatingResult>;
+  getRatings(contentId: string, sinceBuildId?: string): Promise<RatingResult>;
 
   /**
    * Set this actor's clap count for a piece of content (Medium-style —
@@ -84,7 +113,7 @@ export interface DatabaseProvider {
     userId?: string,
   ): Promise<ClapResult>;
 
-  getComments(contentId: string): Promise<CommentNode[]>;
+  getComments(contentId: string, sinceBuildId?: string): Promise<CommentNode[]>;
 
   postComment(contentId: string, data: PostCommentInput, userId?: string): Promise<CommentNode>;
 
@@ -122,5 +151,17 @@ export interface DatabaseProvider {
   /**
    * Get all highlights for a post, scoped to this actor.
    */
-  getHighlights(contentId: string, anonId?: string, userId?: string): Promise<Highlight[]>;
+  getHighlights(
+    contentId: string,
+    anonId?: string,
+    userId?: string,
+    sinceBuildId?: string,
+  ): Promise<Highlight[]>;
+
+  /**
+   * Public engagement stats for a post. Backed by a security_invoker
+   * view that only exposes aggregates — never individual actor rows.
+   * Safe to read with no auth.
+   */
+  getPostStats(contentId: string): Promise<PostStats>;
 }

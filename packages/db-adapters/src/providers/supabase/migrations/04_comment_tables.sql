@@ -8,7 +8,7 @@
 
 create table if not exists post_comments (
   id bigint generated always as identity primary key,
-  post_id text not null references posts(slug) on delete cascade,
+  post_id uuid not null references posts(post_id) on update cascade on delete cascade,
   parent_comment_id bigint,
   user_id uuid references auth.users(id) on delete set null,
   was_registered_user boolean default false not null,
