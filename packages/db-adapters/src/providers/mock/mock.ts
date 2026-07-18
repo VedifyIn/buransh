@@ -1,11 +1,17 @@
-import type { DatabaseProvider, CommentNode, Highlight, PostMetadata } from '../../types';
+import type {
+  CommentNode,
+  DatabaseProvider,
+  Highlight,
+  PostMetadata,
+  UserPreferences,
+} from '../../types';
 import {
   canPerformOperation,
-  validateHighlightOffsets,
   validateClapCount,
-  validateRating,
   validateCommentContent,
   validateHighlightContent,
+  validateHighlightOffsets,
+  validateRating,
 } from '../../utils';
 import initialComments from './seeds.json';
 
@@ -124,17 +130,29 @@ const interactions: InteractionRow[] = [
   },
 ];
 
+// Optimized Map-based storage for O(1) lookups
+const interactionsMap = new Map<string, InteractionRow>();
+
+function getInteractionKey(postId: string, anonId?: string, userId?: string): string {
+  const actorId = userId || anonId || 'unknown';
+  return `${postId}:${actorId}`;
+}
+
+// Initialize map from seed data
+for (const row of interactions) {
+  const key = getInteractionKey(row.postId, row.anonId, row.userId);
+  interactionsMap.set(key, row);
+}
+
 function findRow(postId: string, anonId?: string, userId?: string): InteractionRow | undefined {
-  return interactions.find(
-    (r) =>
-      r.postId === postId &&
-      ((userId != null && r.userId === userId) || (anonId != null && r.anonId === anonId)),
-  );
+  const key = getInteractionKey(postId, anonId, userId);
+  return interactionsMap.get(key);
 }
 
 function upsertRow(postId: string, anonId?: string, userId?: string): InteractionRow {
   const existing = findRow(postId, anonId, userId);
   if (existing) return existing;
+
   const row: InteractionRow = {
     postId,
     userId: userId || undefined,
@@ -145,11 +163,23 @@ function upsertRow(postId: string, anonId?: string, userId?: string): Interactio
     isRead: false,
     updatedAt: new Date().toISOString(),
   };
-  interactions.push(row);
+
+  const key = getInteractionKey(postId, anonId, userId);
+  interactionsMap.set(key, row);
   return row;
 }
 
 const mockHighlights: Highlight[] = [];
+
+// ── User preferences: one row per user ───────────────────────────────
+const mockPreferences = new Map<string, UserPreferences>();
+
+const DEFAULT_PREFERENCES: UserPreferences = {
+  theme: 'system',
+  font_size: 3,
+  read_mode: 1,
+  meta: {},
+};
 
 // ── Provider ─────────────────────────────────────────────────────────
 
@@ -177,9 +207,12 @@ export const MockDB: DatabaseProvider = {
   },
 
   async getRatings(contentId, _sinceBuildId) {
-    const scores = interactions
-      .filter((r) => r.postId === contentId && r.rating != null)
-      .map((r) => r.rating!);
+    const scores: number[] = [];
+    interactionsMap.forEach((row) => {
+      if (row.postId === contentId && row.rating != null) {
+        scores.push(row.rating);
+      }
+    });
     if (scores.length === 0) return { average: 0, count: 0 };
     const sum = scores.reduce((a, b) => a + b, 0);
     return { average: Math.round((sum / scores.length) * 10) / 10, count: scores.length };
@@ -200,9 +233,13 @@ export const MockDB: DatabaseProvider = {
     const row = upsertRow(contentId, anonId, userId);
     row.claps = count; // caller sends total, not increment
     row.updatedAt = new Date().toISOString();
-    const totalClaps = interactions
-      .filter((r) => r.postId === contentId)
-      .reduce((sum, r) => sum + r.claps, 0);
+
+    let totalClaps = 0;
+    interactionsMap.forEach((r) => {
+      if (r.postId === contentId) {
+        totalClaps += r.claps;
+      }
+    });
     return { totalClaps };
   },
 
@@ -356,15 +393,34 @@ export const MockDB: DatabaseProvider = {
   },
 
   async getPostStats(contentId) {
-    const rows = interactions.filter((r) => r.postId === contentId);
-    const totalLikes = rows.filter((r) => r.isLiked).length;
-    const totalClaps = rows.reduce((sum, r) => sum + r.claps, 0);
-    const rated = rows.filter((r) => r.rating != null);
-    const ratingCount = rated.length;
-    const avgRating =
-      ratingCount === 0
-        ? 0
-        : Math.round((rated.reduce((sum, r) => sum + r.rating!, 0) / ratingCount) * 100) / 100;
+    let totalLikes = 0;
+    let totalClaps = 0;
+    let ratingSum = 0;
+    let ratingCount = 0;
+
+    interactionsMap.forEach((row) => {
+      if (row.postId === contentId) {
+        if (row.isLiked) totalLikes++;
+        totalClaps += row.claps;
+        if (row.rating != null) {
+          ratingSum += row.rating;
+          ratingCount++;
+        }
+      }
+    });
+
+    const avgRating = ratingCount === 0 ? 0 : Math.round((ratingSum / ratingCount) * 100) / 100;
     return { totalLikes, totalClaps, avgRating, ratingCount };
+  },
+
+  async getPreferences(userId) {
+    return mockPreferences.get(userId) ?? { ...DEFAULT_PREFERENCES };
+  },
+
+  async savePreferences(userId, prefs) {
+    const existing = mockPreferences.get(userId) ?? { ...DEFAULT_PREFERENCES };
+    const merged = { ...existing, ...prefs };
+    mockPreferences.set(userId, merged);
+    return { success: true };
   },
 };

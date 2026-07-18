@@ -8,6 +8,7 @@ export const API_ROUTES = {
   comment: '/api/comments',
   highlight: '/api/highlights',
   stats: '/api/stats',
+  preferences: '/api/preferences',
 } as const;
 
 export interface ApiError {

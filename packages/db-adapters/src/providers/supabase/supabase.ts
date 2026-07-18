@@ -1,18 +1,18 @@
 import { createClient } from '@supabase/supabase-js';
 import type {
-  DatabaseProvider,
   CommentNode,
+  DatabaseProvider,
   Highlight,
-  PostStats,
   PostMetadata,
+  UserPreferences,
 } from '../../types';
 import {
   canPerformOperation,
-  validateHighlightOffsets,
   validateClapCount,
-  validateRating,
   validateCommentContent,
   validateHighlightContent,
+  validateHighlightOffsets,
+  validateRating,
 } from '../../utils';
 
 /**
@@ -421,6 +421,47 @@ export function getSupabaseDB(accessToken?: string): DatabaseProvider {
         avgRating: Number(data.avg_rating),
         ratingCount: Number(data.rating_count),
       };
+    },
+
+    async getPreferences(userId) {
+      const { data } = await supabase
+        .from('user_preferences')
+        .select('theme, font_size, read_mode, meta')
+        .eq('user_id', userId)
+        .maybeSingle();
+
+      if (!data) {
+        return { theme: 'system', font_size: 3, read_mode: 1, meta: {} };
+      }
+      return {
+        theme: data.theme as UserPreferences['theme'],
+        font_size: data.font_size,
+        read_mode: data.read_mode,
+        meta: (data.meta as Record<string, unknown>) ?? {},
+      };
+    },
+
+    async savePreferences(userId, prefs) {
+      const updates: Record<string, unknown> = { user_id: userId };
+
+      if (prefs.theme !== undefined) {
+        updates.theme = prefs.theme;
+      }
+      if (prefs.font_size !== undefined) {
+        updates.font_size = prefs.font_size;
+      }
+      if (prefs.read_mode !== undefined) {
+        updates.read_mode = prefs.read_mode;
+      }
+      if (prefs.meta !== undefined) {
+        updates.meta = prefs.meta;
+      }
+
+      const { error } = await supabase
+        .from('user_preferences')
+        .upsert(updates, { onConflict: 'user_id' });
+
+      return { success: !error, error: error?.message };
     },
   };
 }

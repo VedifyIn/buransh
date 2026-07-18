@@ -20,6 +20,7 @@ const API_ROUTES: Record<string, string> = {
   rating: '/api/ratings',
   clap: '/api/claps',
   comment: '/api/comments',
+  preferences: '/api/preferences',
 };
 
 async function processSingleItem(item: OfflineInteraction): Promise<boolean> {
@@ -30,13 +31,22 @@ async function processSingleItem(item: OfflineInteraction): Promise<boolean> {
       return true; // Remove from queue
     }
 
+    // Validate that actions requiring slug have it
+    const requiresSlug = ['like', 'bookmark', 'rating', 'clap', 'comment'].includes(
+      item.action_type,
+    );
+    if (requiresSlug && !item.slug) {
+      console.error(`Action ${item.action_type} requires slug but none provided`);
+      return true; // Remove invalid item from queue
+    }
+
+    const body: Record<string, unknown> = { ...item.payload };
+    if (item.slug) body.slug = item.slug;
+
     const response = await fetch(route, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        slug: item.slug,
-        ...item.payload,
-      }),
+      body: JSON.stringify(body),
     });
 
     if (response.ok) {

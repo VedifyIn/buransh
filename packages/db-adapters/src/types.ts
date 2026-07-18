@@ -49,6 +49,33 @@ export interface PostStats {
   ratingCount: number;
 }
 
+export type ThemePreference = 'light' | 'dark' | 'system';
+
+/**
+ * User preferences for the reading experience.
+ *
+ * @property theme - Color theme preference
+ * @property font_size - Text size (1=smallest, 3=default, 5=largest)
+ * @property read_mode - Reading mode (1=standard, 2=focus, 3=immersive)
+ * @property meta - Additional custom preferences as key-value pairs
+ */
+export interface UserPreferences {
+  theme: ThemePreference;
+  font_size: number; // 1-5 scale
+  read_mode: number; // 1-3 scale
+  meta: Record<string, unknown>;
+}
+
+// Validation constants for preferences
+export const PREFERENCE_CONSTRAINTS = {
+  VALID_THEMES: ['light', 'dark', 'system'] as const,
+  FONT_SIZE_MIN: 1,
+  FONT_SIZE_MAX: 5,
+  READ_MODE_MIN: 1,
+  READ_MODE_MAX: 3,
+  META_MAX_SIZE: 10000, // 10KB in bytes
+} as const;
+
 export interface Highlight {
   id: string;
   postId: string;
@@ -164,4 +191,16 @@ export interface DatabaseProvider {
    * Safe to read with no auth.
    */
   getPostStats(contentId: string): Promise<PostStats>;
+
+  /**
+   * Get preferences for a logged-in user. Returns defaults if the
+   * user has never saved — callers never see "not found".
+   */
+  getPreferences(userId: string): Promise<UserPreferences>;
+
+  /**
+   * Merge partial preferences into the user's existing row. Only
+   * the keys present in `prefs` are overwritten; the rest are kept.
+   */
+  savePreferences(userId: string, prefs: Partial<UserPreferences>): Promise<SaveResult>;
 }
