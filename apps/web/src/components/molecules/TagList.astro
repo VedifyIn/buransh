@@ -1,0 +1,26 @@
+---
+import Icon from '@/components/atoms/Icon.astro';
+
+interface Props {
+  tags: string[];
+  title?: string;
+}
+
+const { tags, title } = Astro.props;
+---
+
+{
+  tags.length > 0 && (
+    <div class="flex flex-wrap items-center gap-2">
+      {title && <span class="text-sm text-base-content/60 mr-1">{title}</span>}
+      {tags.map((tag) => (
+        <a
+          href={`/tag/${tag}`}
+          class="badge badge-outline border-base-300 hover:badge-primary transition-colors"
+        >
+          #{tag}
+        </a>
+      ))}
+    </div>
+  )
+}

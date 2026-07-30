@@ -1,0 +1,28 @@
+---
+const ReadingProgressId = 'reading-progress';
+---
+
+<div
+  id={ReadingProgressId}
+  class="fixed top-0 left-0 right-0 z-50 h-1 bg-transparent pointer-events-none"
+>
+  <div
+    id="reading-progress-bar"
+    class="h-full bg-gradient-to-r from-primary to-secondary w-0 transition-[width] duration-150 ease-out"
+  >
+  </div>
+</div>
+
+<script>
+  const bar = document.getElementById('reading-progress-bar');
+  if (bar) {
+    const onScroll = () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      bar.style.width = `${progress}%`;
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  }
+</script>

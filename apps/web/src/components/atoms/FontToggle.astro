@@ -1,0 +1,65 @@
+---
+import { Icon } from 'astro-icon/components';
+
+interface Props {
+  size?: 'sm' | 'md';
+}
+
+const { size = 'md' } = Astro.props;
+
+const sizes: Record<string, string> = {
+  sm: 'btn-sm',
+  md: '',
+};
+---
+
+<div class="join">
+  <button
+    class={`btn btn-ghost join-item ${sizes[size]}`}
+    data-font="sans"
+    aria-label="Sans-serif font"
+  >
+    <span class="font-sans text-sm">Aa</span>
+  </button>
+  <button
+    class={`btn btn-ghost join-item ${sizes[size]}`}
+    data-font="serif"
+    aria-label="Serif font"
+  >
+    <span class="font-hand text-sm">Aa</span>
+  </button>
+  <button
+    class={`btn btn-ghost join-item ${sizes[size]}`}
+    data-font="mono"
+    aria-label="Monospace font"
+  >
+    <span class="font-mono text-sm">Aa</span>
+  </button>
+</div>
+
+<script>
+  const rootStyle = document.documentElement.style;
+  const sansFont =
+    getComputedStyle(document.documentElement).getPropertyValue('--font-sans').trim() ||
+    'sans-serif';
+  const monoFont =
+    getComputedStyle(document.documentElement).getPropertyValue('--font-mono').trim() ||
+    'monospace';
+
+  const FONT_MAP = { sans: sansFont, serif: 'Georgia, serif', mono: monoFont };
+
+  function applyFont(font: string) {
+    document.querySelectorAll('[data-font]').forEach((b) => b.classList.remove('btn-active'));
+    const btn = document.querySelector(`[data-font="${font}"]`);
+    if (btn) btn.classList.add('btn-active');
+    rootStyle.setProperty('--reading-font', FONT_MAP[font as keyof typeof FONT_MAP] || sansFont);
+    localStorage.setItem('vedify-font', font);
+  }
+
+  const savedFont = localStorage.getItem('vedify-font');
+  if (savedFont && FONT_MAP[savedFont as keyof typeof FONT_MAP]) applyFont(savedFont);
+
+  document.querySelectorAll('[data-font]').forEach((btn) => {
+    btn.addEventListener('click', () => applyFont((btn as HTMLElement).dataset.font!));
+  });
+</script>

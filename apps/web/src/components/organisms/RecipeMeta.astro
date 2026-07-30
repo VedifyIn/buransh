@@ -1,0 +1,26 @@
+---
+import ContentMeta from '@/components/organisms/ContentMeta.astro';
+
+interface Recipe {
+  prepTime: string;
+  cookTime: string;
+  totalTime: string;
+  servings: string;
+  calories: string;
+  difficulty: string;
+  cuisine: string;
+}
+
+const { recipe } = Astro.props as { recipe: Recipe };
+const items = [
+  { icon: 'timer', label: 'Prep time', value: recipe.prepTime },
+  { icon: 'flame', label: 'Cook time', value: recipe.cookTime },
+  { icon: 'clock', label: 'Total time', value: recipe.totalTime },
+  { icon: 'users', label: 'Servings', value: recipe.servings },
+  { icon: 'flame', label: 'Calories', value: recipe.calories },
+  { icon: 'bar-chart-3', label: 'Difficulty', value: recipe.difficulty },
+  { icon: 'globe', label: 'Cuisine', value: recipe.cuisine },
+];
+---
+
+<ContentMeta items={items} title="Recipe Info" />

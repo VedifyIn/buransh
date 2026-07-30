@@ -21,10 +21,13 @@ import { defineConfig, fontProviders } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 import pwa from '@vite-pwa/astro';
 import partytown from '@astrojs/partytown';
+import icon from 'astro-icon';
 import { readFileSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import yaml from 'js-yaml';
+import llmTxtIntegration from './src/integrations/llm-txt';
+import slugCollisionIntegration from './src/integrations/slug-collision';
 
 // ---------------------------------------------------------------------------
 // Load site config from YAML
@@ -48,11 +51,17 @@ const config = yaml.load(readFileSync(resolve(__dirname, 'src/data/config.yaml')
 // ---------------------------------------------------------------------------
 const defaultFontCssVar = `--font-${config.defaultFont.toLowerCase()}`;
 
+const themeDefault = config.theme?.default ?? 'vedify';
+const themePrefersdark = config.theme?.prefersdark ?? 'vedify-dark';
+
 const fontBodyPlugin = {
     name: 'font-body-css',
     enforce: 'pre',
     transform(code, id) {
         if (id.includes('global.css')) {
+            code = code
+                .replace('__VEDIFY_IS_DEFAULT__', themeDefault === 'vedify' ? 'true' : 'false')
+                .replace('__VEDIFY_DARK_IS_PREFERSDARK__', themePrefersdark === 'vedify-dark' ? 'true' : 'false');
             if (code.includes('@theme inline')) {
                 return {
                     code: code.replace('@theme inline {', `@theme inline {\n\t--font-body: var(${defaultFontCssVar});`),
@@ -221,7 +230,6 @@ export default defineConfig({
             i18nModule,       // Exports translations via virtual:i18n
         ],
         css: {
-            transformer: 'lightningcss',
             cssMinify: 'esbuild',
         },
     },
@@ -232,12 +240,15 @@ export default defineConfig({
     integrations: [
         mdx(),               // MDX support for blog posts
         sitemap(),           // Auto-generate sitemap.xml
+        icon(),              // Lucide icons for components
         partytown({ config: { forward: config.partytown.forward } }),  // Offload GTM to web worker
         pwa({
             registerType: config.pwa.registerType,
             manifest: config.pwa.manifest,
             workbox: config.pwa.workbox,
         }),
+        llmTxtIntegration(),
+        slugCollisionIntegration(),
     ],
 
     // ---------------------------------------------------------------------------

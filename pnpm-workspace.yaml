@@ -17,3 +17,16 @@ minimumReleaseAgeExclude:
   - '@typescript-eslint/utils@8.62.0'
   - '@typescript-eslint/visitor-keys@8.62.0'
   - typescript-eslint@8.62.0
+  - '@astrojs/cloudflare@14.1.7'
+  - '@astrojs/compiler-binding-darwin-arm64@0.3.2'
+  - '@astrojs/compiler-binding-darwin-x64@0.3.2'
+  - '@astrojs/compiler-binding-linux-arm64-gnu@0.3.2'
+  - '@astrojs/compiler-binding-linux-arm64-musl@0.3.2'
+  - '@astrojs/compiler-binding-linux-x64-gnu@0.3.2'
+  - '@astrojs/compiler-binding-linux-x64-musl@0.3.2'
+  - '@astrojs/compiler-binding-wasm32-wasi@0.3.2'
+  - '@astrojs/compiler-binding-win32-arm64-msvc@0.3.2'
+  - '@astrojs/compiler-binding-win32-x64-msvc@0.3.2'
+  - '@astrojs/compiler-binding@0.3.2'
+  - '@astrojs/compiler-rs@0.3.2'
+  - astro@7.1.6

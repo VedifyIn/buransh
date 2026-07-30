@@ -1,0 +1,181 @@
+---
+import { Icon } from 'astro-icon/components';
+import { tutorialCodeSchema } from '@vedify/schema';
+import type { z } from '@vedify/schema';
+import ContentLayout from '@/layouts/ContentLayout.astro';
+import TutorialMeta from '@/components/organisms/TutorialMeta.astro';
+import AiSummary from '@/components/organisms/AiSummary.astro';
+import StepByStep from '@/components/organisms/StepByStep.astro';
+import TagList from '@/components/molecules/TagList.astro';
+import InteractionGroup from '@/components/molecules/InteractionGroup.astro';
+import CommentSection from '@/components/molecules/CommentSection.astro';
+import AuthorCard from '@/components/organisms/AuthorCard.astro';
+import AdSlot from '@/components/molecules/AdSlot.astro';
+import TableOfContents from '@/components/molecules/TableOfContents.astro';
+import { getAuthor } from '@/utils/get-author';
+
+type Props = z.infer<typeof tutorialCodeSchema>;
+const content = Astro.props as Props;
+
+const resolvedAuthor = getAuthor(content.author) ?? { name: content.author };
+
+const tutorial = {
+  author: resolvedAuthor.name,
+  published: content.datePublished,
+  updated: content.dateModified,
+  readTime: content.readingTime ? `${content.readingTime} min` : '35 min',
+  difficulty: content.difficulty ?? 'Intermediate',
+  language: content.programmingLanguage?.join(', ') ?? 'TypeScript',
+  version: 'Astro 4.x',
+};
+const toc = [
+  { id: 'setup', title: 'Project Setup' },
+  { id: 'routes', title: 'Routes & Pages' },
+  { id: 'components', title: 'Components & Islands' },
+  { id: 'deploy', title: 'Deployment' },
+];
+const steps = [
+  {
+    title: 'Initialize the project',
+    description: 'Scaffold a fresh Astro project with the minimal template and add TypeScript.',
+    duration: '5 min',
+    code: 'npm create astro@latest -- --template minimal --typescript strict',
+    lang: 'bash',
+  },
+  {
+    title: 'Install integrations',
+    description: 'Add Tailwind and any UI integrations you need.',
+    duration: '3 min',
+    code: 'npx astro add tailwind',
+    lang: 'bash',
+  },
+  {
+    title: 'Create your first route',
+    description: 'Astro uses file-based routing. Pages live in src/pages and map directly to URLs.',
+    duration: '10 min',
+    code: '// src/pages/about.astro\nimport Layout from \'@/layouts/Layout.astro\';\n<Layout title="About">\n  <h1>About this site</h1>\n</Layout>',
+    lang: 'ts',
+  },
+  {
+    title: 'Add interactivity',
+    description:
+      'Astro renders to HTML by default. Use client directives for islands of interactivity.',
+    duration: '15 min',
+  },
+  {
+    title: 'Deploy',
+    description: 'Build the project and deploy the static output to any CDN.',
+    duration: '2 min',
+    code: 'npm run build',
+    lang: 'bash',
+  },
+];
+const faqs = content.faqs ?? [
+  {
+    question: 'Do I need React to use Astro?',
+    answer: 'No. Astro supports many UI frameworks as opt-in islands.',
+  },
+  { question: 'Can I add a database later?', answer: 'Yes. Astro is backend-agnostic.' },
+];
+---
+
+<ContentLayout
+  frontmatter={content}
+  title={content.title}
+  description={content.description}
+  breadcrumbs={[
+    { label: 'Home', href: '/' },
+    { label: 'Tutorials', href: '/tutorial' },
+    { label: content.title },
+  ]}
+  currentSection="Tutorial"
+  author={tutorial.author}
+>
+  <article class="max-w-7xl mx-auto px-4 py-8 lg:py-12">
+    <header class="max-w-3xl mx-auto mb-10">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="badge badge-primary">Tutorial</span>
+        <span class="badge badge-outline">{tutorial.difficulty}</span>
+      </div>
+      <h1 class="text-3xl md:text-5xl font-bold tracking-tight mb-4">{content.title}</h1>
+      <p class="text-lg text-base-content/60 mb-6">{content.description}</p>
+      <div class="flex items-center justify-start gap-4 text-sm text-base-content/60">
+        <span class="flex items-center gap-1"
+          ><Icon name="lucide:user" class="h-3.5 w-3.5" /> {tutorial.author}</span
+        >
+        <span>&bull;</span>
+        <span class="flex items-center gap-1"
+          ><Icon name="lucide:calendar" class="h-3.5 w-3.5" /> {tutorial.published}</span
+        >
+        <span>&bull;</span>
+        <span class="flex items-center gap-1"
+          ><Icon name="lucide:clock" class="h-3.5 w-3.5" /> {tutorial.readTime}</span
+        >
+      </div>
+    </header>
+    <figure class="max-w-4xl mx-auto mb-10">
+      <img
+        src="https://images.pexels.com/photos/1181271/pexels-photo-1181271.jpeg?auto=compress&cs=tinysrgb&w=1400&h=700&fit=crop"
+        alt={content.title}
+        class="rounded-2xl w-full object-cover aspect-[2/1]"
+      />
+    </figure>
+    <div class="grid lg:grid-cols-[1fr_300px] gap-8 max-w-5xl mx-auto">
+      <div class="min-w-0">
+        <AiSummary
+          summary={content.description}
+          keyPoints={[
+            'Astro renders to static HTML by default.',
+            'Routes are files in src/pages/ mapped to URLs.',
+            'Opt-in interactivity via client directives.',
+          ]}
+        />
+        <div class="prose-vedify mt-8"><slot /></div>
+        <div class="mt-8"><StepByStep steps={steps} title="Build Steps" /></div>
+        {
+          faqs.length > 0 && (
+            <div class="mt-10">
+              <h2 class="text-2xl font-bold mb-4 flex items-center gap-2">
+                <Icon name="lucide:help-circle" class="h-6 w-6" /> FAQ
+              </h2>
+              <div class="join-vertical w-full">
+                {faqs.map((faq, i) => (
+                  <div class="collapse collapse-arrow join-item border border-base-300 bg-base-100">
+                    <input type="radio" name="tut-faq" checked={i === 0} />
+                    <div class="collapse-title font-medium">{faq.question}</div>
+                    <div class="collapse-content">
+                      <p class="text-base-content/70">{faq.answer}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )
+        }
+        <div class="mt-8"><TagList tags={content.tags} /></div>
+        <div class="my-8"><InteractionGroup /></div>
+        <div class="my-8"><AdSlot variant="banner" /></div>
+        <div class="mt-12"><CommentSection /></div>
+      </div>
+      <aside class="hidden lg:block">
+        <div class="sticky top-24 space-y-6">
+          <TutorialMeta tutorial={tutorial} />
+          <TableOfContents items={toc} />
+          <AdSlot variant="sidebar" />
+          <AuthorCard
+            name={resolvedAuthor.name}
+            role={resolvedAuthor.role ?? 'Senior Frontend Engineer'}
+            bio={resolvedAuthor.bio ??
+              'Building delightful, fast interfaces with a focus on developer experience.'}
+            avatar={resolvedAuthor.avatar ??
+              'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop'}
+            stats={resolvedAuthor.stats ?? [
+              { label: 'Tutorials', value: 23 },
+              { label: 'Followers', value: '8.2k' },
+            ]}
+          />
+        </div>
+      </aside>
+    </div>
+  </article>
+</ContentLayout>

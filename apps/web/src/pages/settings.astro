@@ -1,0 +1,381 @@
+---
+import { Icon } from 'astro-icon/components';
+import Layout from '@/layouts/Layout.astro';
+import Avatar from '@/components/atoms/Avatar.astro';
+
+export const prerender = false;
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+---
+
+<Layout
+  title="Settings - Vedify"
+  description="Manage your account, reading preferences, and theme."
+>
+  <section class="py-12 lg:py-16">
+    <div class="max-w-3xl mx-auto px-4">
+      <!-- Breadcrumb -->
+      <nav class="flex items-center gap-2 text-sm text-base-content/60 mb-6">
+        <a href="/" class="hover:text-base-content transition-colors">Home</a>
+        <Icon name="lucide:chevron-right" class="h-3 w-3" />
+        <span class="text-base-content font-medium">Settings</span>
+      </nav>
+
+      <h1 class="text-3xl md:text-4xl font-bold tracking-tight mb-2">Settings</h1>
+      <p class="text-base-content/60 mb-8">
+        Manage your account, reading preferences, and appearance.
+      </p>
+
+      <!-- Not signed in state -->
+      <div id="not-signed-in" class="card bg-base-100 border border-base-300 rounded-2xl">
+        <div class="card-body items-center text-center py-12">
+          <div class="w-16 h-16 rounded-full bg-base-200 flex items-center justify-center mb-4">
+            <Icon name="lucide:lock" class="h-8 w-8 text-base-content/40" />
+          </div>
+          <h2 class="text-xl font-semibold mb-1">Sign in required</h2>
+          <p class="text-base-content/60 text-sm mb-6 max-w-sm">
+            You need to be signed in to view and manage your settings. Your preferences sync across
+            devices once you're logged in.
+          </p>
+          <a href="/login" class="btn btn-primary gap-2">
+            <Icon name="lucide:log-in" class="h-4 w-4" />
+            Sign In
+          </a>
+        </div>
+      </div>
+
+      <!-- Signed in state -->
+      <div id="signed-in" class="hidden space-y-6">
+        <!-- Profile card -->
+        <div class="card bg-base-100 border border-base-300 rounded-2xl">
+          <div class="card-body">
+            <h2 class="card-title text-lg flex items-center gap-2 mb-4">
+              <Icon name="lucide:user-circle" class="h-5 w-5 text-primary" />
+              Profile
+            </h2>
+            <div class="flex items-center gap-4">
+              <div
+                id="profile-avatar"
+                class="w-16 h-16 rounded-full bg-base-200 flex items-center justify-center overflow-hidden shrink-0"
+              >
+                <Icon name="lucide:user" class="h-8 w-8 text-base-content/40" />
+              </div>
+              <div class="min-w-0 flex-1">
+                <p id="profile-name" class="font-semibold text-lg truncate">Loading\u2026</p>
+                <p id="profile-email" class="text-sm text-base-content/60 truncate">
+                  Loading\u2026
+                </p>
+                <span class="badge badge-success badge-sm mt-1 gap-1">
+                  <Icon name="lucide:check" class="h-3 w-3" /> Authenticated
+                </span>
+              </div>
+              <button id="logout-btn" class="btn btn-ghost btn-sm gap-2 text-error">
+                <Icon name="lucide:log-out" class="h-4 w-4" />
+                Sign Out
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Theme -->
+        <div class="card bg-base-100 border border-base-300 rounded-2xl">
+          <div class="card-body">
+            <h2 class="card-title text-lg flex items-center gap-2 mb-4">
+              <Icon name="lucide:palette" class="h-5 w-5 text-primary" />
+              Theme
+            </h2>
+            <p class="text-sm text-base-content/60 mb-4">
+              Choose how Vedify looks. System follows your device preference.
+            </p>
+            <div class="grid grid-cols-3 gap-3">
+              <label class="cursor-pointer">
+                <input type="radio" name="pref-theme" value="light" class="peer hidden" />
+                <div
+                  class="card border-2 border-base-300 peer-checked:border-primary peer-checked:bg-primary/5 rounded-xl p-4 text-center transition-all hover:border-primary/50"
+                >
+                  <Icon name="lucide:sun" class="h-6 w-6 mx-auto mb-2" />
+                  <span class="text-sm font-medium">Light</span>
+                </div>
+              </label>
+              <label class="cursor-pointer">
+                <input type="radio" name="pref-theme" value="dark" class="peer hidden" />
+                <div
+                  class="card border-2 border-base-300 peer-checked:border-primary peer-checked:bg-primary/5 rounded-xl p-4 text-center transition-all hover:border-primary/50"
+                >
+                  <Icon name="lucide:moon" class="h-6 w-6 mx-auto mb-2" />
+                  <span class="text-sm font-medium">Dark</span>
+                </div>
+              </label>
+              <label class="cursor-pointer">
+                <input type="radio" name="pref-theme" value="system" class="peer hidden" />
+                <div
+                  class="card border-2 border-base-300 peer-checked:border-primary peer-checked:bg-primary/5 rounded-xl p-4 text-center transition-all hover:border-primary/50"
+                >
+                  <Icon name="lucide:monitor" class="h-6 w-6 mx-auto mb-2" />
+                  <span class="text-sm font-medium">System</span>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Font size -->
+        <div class="card bg-base-100 border border-base-300 rounded-2xl">
+          <div class="card-body">
+            <h2 class="card-title text-lg flex items-center gap-2 mb-4">
+              <Icon name="lucide:type" class="h-5 w-5 text-primary" />
+              Reading Font Size
+            </h2>
+            <p class="text-sm text-base-content/60 mb-4">
+              Adjust the body text size for comfortable reading.
+            </p>
+            <div class="flex items-center gap-4">
+              <span class="text-xs text-base-content/50">A</span>
+              <input
+                type="range"
+                id="pref-font-size"
+                min="1"
+                max="5"
+                step="1"
+                value="3"
+                class="range range-primary range-sm flex-1"
+              />
+              <span class="text-xl text-base-content/50">A</span>
+            </div>
+            <div class="flex justify-between text-xs text-base-content/40 mt-1 px-2">
+              <span>Small</span><span>Medium</span><span>Large</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Read mode -->
+        <div class="card bg-base-100 border border-base-300 rounded-2xl">
+          <div class="card-body">
+            <h2 class="card-title text-lg flex items-center gap-2 mb-4">
+              <Icon name="lucide:book" class="h-5 w-5 text-primary" />
+              Reading Mode
+            </h2>
+            <p class="text-sm text-base-content/60 mb-4">
+              Control the density and layout of article pages.
+            </p>
+            <div class="grid grid-cols-3 gap-3">
+              <label class="cursor-pointer">
+                <input type="radio" name="pref-read-mode" value="1" class="peer hidden" />
+                <div
+                  class="card border-2 border-base-300 peer-checked:border-primary peer-checked:bg-primary/5 rounded-xl p-4 text-center transition-all hover:border-primary/50"
+                >
+                  <Icon name="lucide:layout" class="h-6 w-6 mx-auto mb-2" />
+                  <span class="text-sm font-medium">Compact</span>
+                </div>
+              </label>
+              <label class="cursor-pointer">
+                <input type="radio" name="pref-read-mode" value="2" class="peer hidden" />
+                <div
+                  class="card border-2 border-base-300 peer-checked:border-primary peer-checked:bg-primary/5 rounded-xl p-4 text-center transition-all hover:border-primary/50"
+                >
+                  <Icon name="lucide:align-left" class="h-6 w-6 mx-auto mb-2" />
+                  <span class="text-sm font-medium">Standard</span>
+                </div>
+              </label>
+              <label class="cursor-pointer">
+                <input type="radio" name="pref-read-mode" value="3" class="peer hidden" />
+                <div
+                  class="card border-2 border-base-300 peer-checked:border-primary peer-checked:bg-primary/5 rounded-xl p-4 text-center transition-all hover:border-primary/50"
+                >
+                  <Icon name="lucide:rows-3" class="h-6 w-6 mx-auto mb-2" />
+                  <span class="text-sm font-medium">Spacious</span>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Save bar -->
+        <div class="flex items-center justify-between gap-4 sticky bottom-4">
+          <div id="save-status" class="text-sm text-base-content/50"></div>
+          <button id="save-btn" class="btn btn-primary gap-2 shadow-lg">
+            <Icon name="lucide:save" class="h-4 w-4" />
+            Save Preferences
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script define:vars={{ SUPABASE_URL, SUPABASE_ANON_KEY }}>
+  const notSignedIn = document.getElementById('not-signed-in');
+  const signedIn = document.getElementById('signed-in');
+  const profileAvatar = document.getElementById('profile-avatar');
+  const profileName = document.getElementById('profile-name');
+  const profileEmail = document.getElementById('profile-email');
+  const logoutBtn = document.getElementById('logout-btn');
+  const saveBtn = document.getElementById('save-btn');
+  const saveStatus = document.getElementById('save-status');
+  const themeRadios = document.querySelectorAll('input[name="pref-theme"]');
+  const fontSizeRange = document.getElementById('pref-font-size');
+  const readModeRadios = document.querySelectorAll('input[name="pref-read-mode"]');
+
+  function getCookie(name) {
+    const match = document.cookie.match(
+      new RegExp('(?:^|; )' + name.replace(/([.$?*|{}()[]\\\/+^])/g, '\\$1') + '=([^;]*)'),
+    );
+    return match ? decodeURIComponent(match[1]) : null;
+  }
+
+  function deleteCookie(name) {
+    document.cookie = name + '=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+  }
+
+  // --- Check auth state ---
+  async function checkAuth() {
+    const token = getCookie('sb-access-token');
+    if (!token) {
+      notSignedIn.classList.remove('hidden');
+      signedIn.classList.add('hidden');
+      return;
+    }
+
+    try {
+      const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+        headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error('Not authenticated');
+      const user = await res.json();
+
+      notSignedIn.classList.add('hidden');
+      signedIn.classList.remove('hidden');
+
+      profileName.textContent =
+        user.user_metadata?.full_name || user.email?.split('@')[0] || 'User';
+      profileEmail.textContent = user.email || '';
+
+      // Gravatar
+      const email = (user.email || '').trim().toLowerCase();
+      const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(email));
+      const hex = Array.from(new Uint8Array(hash))
+        .map((b) => b.toString(16).padStart(2, '0'))
+        .join('');
+      const gravatarUrl = `https://cravatar.eu/avatar/${hex}?d=retro&s=128`;
+      profileAvatar.innerHTML = `<img src="${gravatarUrl}" alt="Avatar" class="w-16 h-16 rounded-full object-cover" />`;
+
+      // Load preferences
+      await loadPreferences(token);
+    } catch {
+      notSignedIn.classList.remove('hidden');
+      signedIn.classList.add('hidden');
+    }
+  }
+
+  // --- Load preferences from API ---
+  async function loadPreferences(token) {
+    try {
+      const res = await fetch('/api/preferences', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) return;
+      const json = await res.json();
+      const prefs = json.data || {};
+
+      if (prefs.theme) {
+        const radio = document.querySelector(`input[name="pref-theme"][value="${prefs.theme}"]`);
+        if (radio) radio.checked = true;
+      }
+      if (prefs.font_size) {
+        fontSizeRange.value = String(prefs.font_size);
+      }
+      if (prefs.read_mode) {
+        const radio = document.querySelector(
+          `input[name="pref-read-mode"][value="${prefs.read_mode}"]`,
+        );
+        if (radio) radio.checked = true;
+      }
+    } catch {
+      /* ignore */
+    }
+  }
+
+  // --- Save preferences ---
+  saveBtn.addEventListener('click', async () => {
+    saveStatus.textContent = 'Saving\u2026';
+    saveBtn.disabled = true;
+
+    const theme = document.querySelector('input[name="pref-theme"]:checked')?.value;
+    const fontSize = parseInt(fontSizeRange.value, 10);
+    const readMode = parseInt(
+      document.querySelector('input[name="pref-read-mode"]:checked')?.value || '1',
+      10,
+    );
+
+    const token = getCookie('sb-access-token');
+    if (!token) {
+      saveStatus.textContent = 'Please sign in first.';
+      saveBtn.disabled = false;
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/preferences', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          theme: theme || 'system',
+          font_size: fontSize,
+          read_mode: readMode,
+        }),
+      });
+
+      if (!res.ok) {
+        const json = await res.json().catch(() => ({}));
+        throw new Error(json.error || 'Failed to save');
+      }
+
+      // Apply theme immediately
+      if (theme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'vedify-dark');
+        localStorage.setItem('vedify-theme', 'vedify-dark');
+      } else if (theme === 'light') {
+        document.documentElement.setAttribute('data-theme', 'vedify');
+        localStorage.setItem('vedify-theme', 'vedify');
+      } else {
+        localStorage.removeItem('vedify-theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        document.documentElement.setAttribute('data-theme', prefersDark ? 'vedify-dark' : 'vedify');
+      }
+
+      saveStatus.textContent = 'Saved successfully.';
+      setTimeout(() => {
+        saveStatus.textContent = '';
+      }, 3000);
+    } catch (err) {
+      saveStatus.textContent = err instanceof Error ? err.message : 'Save failed.';
+    } finally {
+      saveBtn.disabled = false;
+    }
+  });
+
+  // --- Logout ---
+  logoutBtn.addEventListener('click', async () => {
+    const token = getCookie('sb-access-token');
+    if (token) {
+      try {
+        await fetch(`${SUPABASE_URL}/auth/v1/logout`, {
+          method: 'POST',
+          headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${token}` },
+        });
+      } catch {
+        /* ignore */
+      }
+    }
+    deleteCookie('sb-access-token');
+    deleteCookie('sb-refresh-token');
+    window.location.href = '/login';
+  });
+
+  // --- Init ---
+  void checkAuth();
+</script>

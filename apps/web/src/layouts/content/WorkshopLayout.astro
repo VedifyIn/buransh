@@ -1,0 +1,125 @@
+---
+import { Icon } from 'astro-icon/components';
+import type { BaseFrontmatter } from '@vedify/schema';
+import ContentLayout from '@/layouts/ContentLayout.astro';
+import EventMeta from '@/components/organisms/EventMeta.astro';
+import InteractionGroup from '@/components/molecules/InteractionGroup.astro';
+import CommentSection from '@/components/molecules/CommentSection.astro';
+import TagList from '@/components/molecules/TagList.astro';
+
+type Props = BaseFrontmatter & { eventType?: string };
+const content = Astro.props as Props;
+const eventType = content.eventType ?? 'Workshop';
+
+const event = {
+  date: 'Aug 22, 2026',
+  time: '10:00 AM PST',
+  location: 'Remote / Online',
+  venue: 'Zoom + Discord',
+  duration: '4 hours',
+  price: '$49',
+  capacity: '50 participants',
+};
+const agenda = [
+  { time: '10:00', title: 'Welcome & setup', desc: 'Get your environment ready.' },
+  { time: '10:30', title: 'Workshop Part 1: Foundations', desc: 'Hands-on intro to the topic.' },
+  { time: '12:00', title: 'Lunch break', desc: '45 min break.' },
+  { time: '12:45', title: 'Workshop Part 2: Advanced patterns', desc: 'Real-world exercises.' },
+  { time: '14:00', title: 'Group project', desc: 'Build a small project in teams.' },
+  { time: '15:30', title: 'Showcase & Q&A', desc: 'Share your work and ask questions.' },
+];
+const requirements = [
+  'A laptop with Node 20+ installed',
+  'Basic TypeScript familiarity',
+  'A free GitHub account',
+  'Discord for team chat',
+];
+---
+
+<ContentLayout
+  frontmatter={content}
+  title={content.title}
+  description={content.description}
+  breadcrumbs={[
+    { label: 'Home', href: '/' },
+    { label: 'Workshops', href: '/workshop' },
+    { label: content.title },
+  ]}
+  currentSection={eventType}
+>
+  <div class="max-w-7xl mx-auto px-4 py-8 lg:py-12">
+    <div class="grid lg:grid-cols-[1fr_320px] gap-8">
+      <div class="min-w-0">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="badge badge-primary gap-1"
+            ><Icon name="lucide:wrench" class="h-3.5 w-3.5" /> {eventType}</span
+          >
+          <span class="badge badge-warning">5 spots left</span>
+        </div>
+        <h1 class="text-3xl md:text-4xl font-bold tracking-tight mb-3">{content.title}</h1>
+        <p class="text-lg text-base-content/60 mb-6">{content.description}</p>
+        <div class="card bg-base-100 border border-base-300 mb-8">
+          <div class="card-body">
+            <h2 class="card-title flex items-center gap-2">
+              <Icon name="lucide:calendar" class="h-5 w-5" /> Agenda
+            </h2>
+            <ul class="steps steps-vertical w-full mt-2">
+              {
+                agenda.map((item) => (
+                  <li class="step step-primary">
+                    <div class="text-left w-full pb-3">
+                      <div class="flex items-baseline gap-2">
+                        <>
+                          <span class="font-mono text-sm text-base-content/60">{item.time}</span>
+                          <span class="font-medium">{item.title}</span>
+                        </>
+                      </div>
+                      <p class="text-sm text-base-content/60 mt-0.5">{item.desc}</p>
+                    </div>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+        </div>
+        <div class="card bg-base-100 border border-base-300 mb-8">
+          <div class="card-body">
+            <h2 class="card-title flex items-center gap-2">
+              <Icon name="lucide:check-circle-2" class="h-5 w-5" /> What you'll need
+            </h2>
+            <ul class="space-y-2 mt-2">
+              {
+                requirements.map((r) => (
+                  <li class="flex items-start gap-2 text-sm">
+                    <Icon name="lucide:check" class="h-4 w-4 text-success mt-0.5" /> {r}
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+        </div>
+        <div class="prose-vedify"><slot /></div>
+        <div class="mt-8"><TagList tags={content.tags} /></div>
+        <div class="my-8"><InteractionGroup /></div>
+        <div class="mt-12"><CommentSection /></div>
+      </div>
+      <aside class="space-y-6 lg:sticky lg:top-24 lg:self-start">
+        <div class="card bg-base-100 border border-base-300">
+          <div class="card-body">
+            <div class="flex items-baseline gap-2 mb-2">
+              <span class="text-2xl font-bold">$49</span>
+            </div>
+            <p class="text-xs text-base-content/60 mb-3">Includes recording + materials</p>
+            <button class="btn btn-primary w-full mb-2 gap-2"
+              ><Icon name="lucide:ticket" class="h-4 w-4" /> Reserve Spot</button
+            >
+            <p class="text-xs text-base-content/50 text-center mt-2">
+              Refundable up to 7 days before
+            </p>
+          </div>
+        </div>
+        <EventMeta event={event} type={eventType} />
+      </aside>
+    </div>
+  </div>
+</ContentLayout>

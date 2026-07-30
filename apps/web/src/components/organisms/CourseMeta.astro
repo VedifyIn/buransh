@@ -1,0 +1,26 @@
+---
+import ContentMeta from '@/components/organisms/ContentMeta.astro';
+
+interface Course {
+  instructor: string;
+  duration: string;
+  lessons: number;
+  level: string;
+  language: string;
+  certificate: boolean;
+  lastUpdated: string;
+}
+
+const { course } = Astro.props as { course: Course };
+const items = [
+  { icon: 'user', label: 'Instructor', value: course.instructor },
+  { icon: 'clock', label: 'Duration', value: course.duration },
+  { icon: 'play-circle', label: 'Lessons', value: String(course.lessons) },
+  { icon: 'bar-chart-3', label: 'Level', value: course.level },
+  { icon: 'languages', label: 'Language', value: course.language },
+  { icon: 'award', label: 'Certificate', value: course.certificate ? 'Yes' : 'No' },
+  { icon: 'refresh-cw', label: 'Updated', value: course.lastUpdated },
+];
+---
+
+<ContentMeta items={items} title="Course Details" />

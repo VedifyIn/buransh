@@ -1,0 +1,81 @@
+---
+import { Icon } from 'astro-icon/components';
+import Card from '@/components/molecules/Card.astro';
+
+interface Nutrient {
+  label: string;
+  value: string;
+  dailyValue?: string;
+}
+
+interface Props {
+  servingSize?: string;
+  servingsPerContainer?: number;
+  calories?: number;
+  nutrients: {
+    main: Nutrient[];
+    vitamins?: Nutrient[];
+  };
+}
+
+const {
+  servingSize = '1 serving (240g)',
+  servingsPerContainer = 4,
+  calories = 420,
+  nutrients,
+} = Astro.props;
+---
+
+<div class="card bg-base-100 border-2 border-base-400 overflow-hidden nutrition-facts">
+  <div class="bg-base-300/60 px-4 py-3 border-b-2 border-base-400">
+    <h3 class="font-bold text-lg uppercase tracking-tight">Nutrition Facts</h3>
+    <p class="text-sm font-medium">{servingsPerContainer} servings per container</p>
+    <p class="text-sm">Serving size <span class="font-bold">{servingSize}</span></p>
+  </div>
+  <div class="px-4 py-3 border-b-2 border-base-400">
+    <div class="flex items-end justify-between">
+      <span class="font-bold text-sm">Calories</span>
+      <span class="font-bold text-2xl">{calories}</span>
+    </div>
+  </div>
+  <div class="px-4 py-2 bg-base-200/50">
+    <p class="text-xs font-bold uppercase text-center mb-1">% Daily Value *</p>
+  </div>
+  <ul class="divide-y divide-base-300">
+    {
+      nutrients.main.map((n) => (
+        <li class="flex items-center justify-between px-4 py-2 text-sm">
+          <span>
+            <span class="font-bold">{n.value}</span> {n.label}
+          </span>
+          {n.dailyValue && <span class="font-bold">{n.dailyValue}</span>}
+        </li>
+      ))
+    }
+  </ul>
+  {
+    nutrients.vitamins && nutrients.vitamins.length > 0 && (
+      <>
+        <div class="px-4 py-1 bg-base-200/50 border-t-2 border-base-400">
+          <p class="text-xs font-bold uppercase">Vitamins & Minerals</p>
+        </div>
+        <ul class="divide-y divide-base-300">
+          {nutrients.vitamins.map((v) => (
+            <li class="flex items-center justify-between px-4 py-2 text-sm">
+              <span>{v.label}</span>
+              <span>
+                <span class="font-bold">{v.value}</span>{' '}
+                {v.dailyValue ? <span class="text-base-content/60">{v.dailyValue}</span> : null}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </>
+    )
+  }
+  <div class="px-4 py-3 bg-base-200/50 border-t border-base-300">
+    <p class="text-xs text-base-content/50 italic">
+      * Percent Daily Values based on a 2,000 calorie diet.
+    </p>
+  </div>
+</div>

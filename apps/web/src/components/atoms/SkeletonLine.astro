@@ -1,0 +1,17 @@
+---
+interface Props {
+  width?: string;
+  height?: string;
+  rounded?: string;
+  class?: string;
+}
+
+const {
+  width = 'w-full',
+  height = 'h-4',
+  rounded = 'rounded',
+  class: className = '',
+} = Astro.props;
+---
+
+<div class={`skeleton ${width} ${height} ${rounded} ${className}`}></div>

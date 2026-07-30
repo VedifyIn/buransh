@@ -1,0 +1,160 @@
+---
+import Icon from '@/components/atoms/Icon.astro';
+
+interface Comment {
+  author: string;
+  avatar: string;
+  date: string;
+  content: string;
+  likes?: number;
+  replies?: Comment[];
+}
+
+interface Props {
+  comments?: Comment[];
+}
+
+const sampleComments: Comment[] = [
+  {
+    author: 'Sarah Chen',
+    avatar:
+      'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=80&h=80&fit=crop',
+    date: '2 days ago',
+    content:
+      'This is exactly what I needed. The breakdown of architectural tradeoffs was particularly illuminating — especially the point about eventual consistency vs. strong consistency being a product decision, not just a technical one.',
+    likes: 24,
+    replies: [
+      {
+        author: 'Marcus Webb',
+        avatar:
+          'https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg?auto=compress&cs=tinysrgb&w=80&h=80&fit=crop',
+        date: '1 day ago',
+        content: 'Agreed. Would love a follow-up that goes deeper on the consensus algorithms.',
+        likes: 5,
+      },
+    ],
+  },
+  {
+    author: 'Priya Patel',
+    avatar:
+      'https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg?auto=compress&cs=tinysrgb&w=80&h=80&fit=crop',
+    date: '3 days ago',
+    content:
+      'Curious how this approach holds up at 10x the scale. Have you tested with sharded clusters?',
+    likes: 11,
+  },
+];
+
+const { comments = sampleComments } = Astro.props;
+const total = comments.length + comments.reduce((acc, c) => acc + (c.replies?.length || 0), 0);
+---
+
+<section class="space-y-6">
+  <div class="flex items-center justify-between">
+    <h2 class="text-xl font-bold flex items-center gap-2">
+      <Icon name="lucide:message-circle" size="md" />
+      Comments
+      <span class="badge badge-primary badge-sm">{total}</span>
+    </h2>
+    <select class="select select-bordered select-sm">
+      <option>Top</option>
+      <option>Newest</option>
+      <option>Oldest</option>
+    </select>
+  </div>
+
+  <div class="card bg-base-100 border border-base-300">
+    <div class="card-body p-4">
+      <div class="flex gap-3">
+        <div class="avatar avatar-online">
+          <div class="w-10 rounded-full">
+            <img
+              src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=80&h=80&fit=crop"
+              alt="You"
+            />
+          </div>
+        </div>
+        <div class="flex-1">
+          <textarea
+            class="textarea textarea-bordered w-full min-h-20"
+            placeholder="Share your thoughts..."></textarea>
+          <div class="flex items-center justify-between mt-2">
+            <div class="flex items-center gap-2">
+              <button class="btn btn-ghost btn-xs btn-circle"
+                ><Icon name="lucide:image" size="xs" /></button
+              >
+              <button class="btn btn-ghost btn-xs btn-circle"
+                ><Icon name="lucide:code" size="xs" /></button
+              >
+              <button class="btn btn-ghost btn-xs btn-circle"
+                ><Icon name="lucide:link" size="xs" /></button
+              >
+            </div>
+            <button class="btn btn-primary btn-sm">Post Comment</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="space-y-4">
+    {
+      comments.map((comment) => (
+        <div class="card bg-base-100 border border-base-300">
+          <div class="card-body p-4">
+            <div class="flex gap-3">
+              <div class="avatar">
+                <div class="w-10 rounded-full">
+                  <img src={comment.avatar} alt={comment.author} loading="lazy" />
+                </div>
+              </div>
+              <div class="flex-1">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="font-semibold">{comment.author}</span>
+                  <span class="text-xs text-base-content/50">&bull; {comment.date}</span>
+                </div>
+                <p class="text-sm mt-1 leading-relaxed">{comment.content}</p>
+                <div class="flex items-center gap-3 mt-3">
+                  <button class="btn btn-ghost btn-xs gap-1">
+                    <Icon name="lucide:thumbs-up" size="xs" />
+                    {comment.likes ?? 0}
+                  </button>
+                  <button class="btn btn-ghost btn-xs gap-1">
+                    <Icon name="lucide:message-square" size="xs" /> Reply
+                  </button>
+                </div>
+
+                {comment.replies && comment.replies.length > 0 && (
+                  <div class="mt-4 pl-4 border-l-2 border-base-300 space-y-4">
+                    {comment.replies.map((reply) => (
+                      <div class="flex gap-3">
+                        <div class="avatar">
+                          <div class="w-8 rounded-full">
+                            <img src={reply.avatar} alt={reply.author} loading="lazy" />
+                          </div>
+                        </div>
+                        <div class="flex-1">
+                          <div class="flex items-center gap-2 flex-wrap">
+                            <span class="font-semibold text-sm">{reply.author}</span>
+                            <span class="text-xs text-base-content/50">&bull; {reply.date}</span>
+                          </div>
+                          <p class="text-sm mt-1 leading-relaxed">{reply.content}</p>
+                          <div class="flex items-center gap-3 mt-2">
+                            <button class="btn btn-ghost btn-xs gap-1">
+                              <Icon name="lucide:thumbs-up" size="xs" />
+                              {reply.likes ?? 0}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+</section>

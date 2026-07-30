@@ -1,0 +1,87 @@
+---
+import { Icon } from 'astro-icon/components';
+import Card from '@/components/molecules/Card.astro';
+import SectionHeader from '@/components/molecules/SectionHeader.astro';
+
+interface Ingredient {
+  name: string;
+  amount: string;
+  note?: string;
+}
+
+interface Props {
+  ingredients: Ingredient[];
+  servings?: number;
+}
+
+const { ingredients, servings } = Astro.props;
+---
+
+<Card padding="md">
+  <div class="flex items-center justify-between mb-3">
+    <SectionHeader title="Ingredients" icon="utensils" />
+    {
+      servings && (
+        <div class="flex items-center gap-2 text-sm text-base-content/60">
+          <span>Servings:</span>
+          <div class="join">
+            <button class="btn btn-xs join-item" id="servings-dec">
+              &minus;
+            </button>
+            <span class="btn btn-xs join-item pointer-events-none" id="servings-value">
+              {servings}
+            </span>
+            <button class="btn btn-xs join-item" id="servings-inc">
+              +
+            </button>
+          </div>
+        </div>
+      )
+    }
+  </div>
+  <ul class="space-y-2">
+    {
+      ingredients.map((ing) => (
+        <li class="flex items-start gap-3 ingredient-row" data-base-amount={ing.amount}>
+          <label class="cursor-pointer">
+            <input type="checkbox" class="checkbox checkbox-sm checkbox-primary ingredient-check" />
+          </label>
+          <div class="flex-1">
+            <span class="text-sm">
+              <span class="font-medium ingredient-amount">{ing.amount}</span>{' '}
+              <span class="ingredient-name">{ing.name}</span>
+            </span>
+            {ing.note && <p class="text-xs text-base-content/50">{ing.note}</p>}
+          </div>
+        </li>
+      ))
+    }
+  </ul>
+</Card>
+
+<script define:vars={{ baseServings: servings }}>
+  const inc = document.getElementById('servings-inc');
+  const dec = document.getElementById('servings-dec');
+  const val = document.getElementById('servings-value');
+  if (inc && dec && val) {
+    const update = (n) => {
+      const factor = n / baseServings;
+      document.querySelectorAll('.ingredient-row').forEach((row) => {
+        const base = parseFloat(row.dataset.baseAmount);
+        const amt = row.querySelector('.ingredient-amount');
+        if (base && amt)
+          amt.textContent = (base * factor).toFixed(base % 1 === 0 ? 0 : 1).replace(/\.0$/, '');
+      });
+    };
+    inc.addEventListener('click', () => {
+      const n = Math.min(20, parseInt(val.textContent) + 1);
+      val.textContent = n;
+      update(n);
+    });
+    dec.addEventListener('click', () => {
+      const n = Math.max(1, parseInt(val.textContent) - 1);
+      val.textContent = n;
+      update(n);
+    });
+  }
+</script>

@@ -1,0 +1,23 @@
+---
+import { SchemaLibrary } from '@vedify/schema';
+import type { ContentFrontmatter, ResolvedAuthor, OrganizationConfig } from '@vedify/schema';
+
+interface Props {
+  frontmatter: Record<string, unknown>;
+  siteUrl: string;
+  author: ResolvedAuthor;
+  organization?: OrganizationConfig;
+}
+
+const { frontmatter, siteUrl, author, organization } = Astro.props;
+
+const fm = frontmatter as unknown as ContentFrontmatter;
+const lib = new SchemaLibrary(siteUrl, fm, author, organization);
+const graph = lib.getAllAsGraph();
+---
+
+{
+  graph['@graph'].length > 0 && (
+    <script type="application/ld+json" set:html={JSON.stringify(graph)} />
+  )
+}

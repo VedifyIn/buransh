@@ -1,0 +1,97 @@
+---
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { load } from 'js-yaml';
+
+const __dirname = fileURLToPath(new URL('.', import.meta.url));
+const raw = load(readFileSync(resolve(__dirname, '../../data/config.yaml'), 'utf-8')) as Record<string, unknown>;
+const a = (raw.analytics ?? {}) as {
+  consent?: { required?: boolean };
+  google?: { enabled?: boolean; tagId?: string };
+  vercel?: { enabled?: boolean; analytics?: boolean; speedInsights?: boolean };
+  cloudflare?: { enabled?: boolean; token?: string };
+};
+
+const consentRequired = a.consent?.required !== false;
+const googleTagId = a.google?.enabled ? (a.google?.tagId ?? '') : '';
+const enableVercelAnalytics = !!(a.vercel?.enabled && a.vercel?.analytics);
+const enableVercelSi = !!(a.vercel?.enabled && a.vercel?.speedInsights);
+const cfToken = a.cloudflare?.enabled ? (a.cloudflare?.token ?? '') : '';
+
+const hasAny = googleTagId || enableVercelAnalytics || enableVercelSi || cfToken;
+if (!hasAny) return '';
+---
+
+{
+  googleTagId && (
+    <script is:inline define:vars={{ consentRequired, googleTagId }}>
+      (function () {
+        if (consentRequired && localStorage.getItem('vedify-consent') !== 'accepted') return;
+        (function (w, d, s, l, i) {
+          w[l] = w[l] || [];
+          w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+          var f = d.getElementsByTagName(s)[0],
+            j = d.createElement(s),
+            dl = l != 'dataLayer' ? '&l=' + l : '';
+          j.async = true;
+          j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+          f.parentNode.insertBefore(j, f);
+        })(window, document, 'script', 'dataLayer', googleTagId);
+      })();
+    </script>
+  )
+}
+
+{
+  enableVercelAnalytics && (
+    <script is:inline define:vars={{ consentRequired }}>
+      (function () {
+        if (consentRequired && localStorage.getItem('vedify-consent') !== 'accepted') return;
+        window.va =
+          window.va ||
+          function () {
+            (window.va.q = window.va.q || []).push(arguments);
+          };
+        var s = document.createElement('script');
+        s.defer = true;
+        s.src = 'https://va.vercel-scripts.com/v1/va.min.js';
+        document.head.appendChild(s);
+      })();
+    </script>
+  )
+}
+
+{
+  enableVercelSi && (
+    <script is:inline define:vars={{ consentRequired }}>
+      (function () {
+        if (consentRequired && localStorage.getItem('vedify-consent') !== 'accepted') return;
+        window.si =
+          window.si ||
+          function () {
+            (window.si.q = window.si.q || []).push(arguments);
+          };
+        var s = document.createElement('script');
+        s.defer = true;
+        s.src = 'https://va.vercel-scripts.com/v1/si.min.js';
+        document.head.appendChild(s);
+      })();
+    </script>
+  )
+}
+
+{
+  cfToken && (
+    <script is:inline define:vars={{ cfToken, consentRequired }}>
+      (function () {
+        if (consentRequired && localStorage.getItem('vedify-consent') !== 'accepted') return;
+        var s = document.createElement('script');
+        s.defer = true;
+        s.src = 'https://static.cloudflareinsights.com/beacon.min.js';
+        s.setAttribute('data-cf-beacon', JSON.stringify({ token: cfToken }));
+        document.head.appendChild(s);
+      })();
+    </script>
+  )
+}

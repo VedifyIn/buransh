@@ -1,0 +1,42 @@
+---
+import Avatar from '@/components/atoms/Avatar.astro';
+import Button from '@/components/atoms/Button.astro';
+import Card from '@/components/molecules/Card.astro';
+
+interface Props {
+  name: string;
+  role?: string;
+  bio?: string;
+  avatar: string;
+  stats?: { label: string; value: string | number }[];
+}
+
+const { name, role, bio, avatar, stats = [] } = Astro.props;
+---
+
+<Card padding="md">
+  <div class="flex items-start gap-4">
+    <Avatar src={avatar} alt={name} size="lg" ring="primary" />
+    <div class="flex-1 min-w-0">
+      <h3 class="font-semibold text-lg">{name}</h3>
+      {role && <p class="text-sm text-base-content/60">{role}</p>}
+      {bio && <p class="text-sm text-base-content/70 mt-2">{bio}</p>}
+      <div class="flex gap-2 mt-3">
+        <Button variant="outline" size="xs">Follow</Button>
+        <Button variant="ghost" size="xs" icon="external-link">Site</Button>
+      </div>
+    </div>
+  </div>
+  {
+    stats.length > 0 && (
+      <div class="grid grid-cols-3 gap-2 mt-4 pt-4 border-t border-base-300">
+        {stats.map((stat) => (
+          <div class="text-center">
+            <p class="font-bold text-lg">{stat.value}</p>
+            <p class="text-xs text-base-content/60">{stat.label}</p>
+          </div>
+        ))}
+      </div>
+    )
+  }
+</Card>

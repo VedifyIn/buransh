@@ -1,0 +1,35 @@
+---
+import Icon from '@/components/atoms/Icon.astro';
+import Card from '@/components/molecules/Card.astro';
+import SectionHeader from '@/components/molecules/SectionHeader.astro';
+
+interface MetaItem {
+  icon: string;
+  label: string;
+  value: string;
+}
+
+interface Props {
+  items: MetaItem[];
+  title?: string;
+}
+
+const { items, title } = Astro.props;
+---
+
+<Card padding="md">
+  {title && <SectionHeader title={title} />}
+  <dl class="space-y-3">
+    {
+      items.map((item) => (
+        <div class="flex items-center justify-between gap-3">
+          <dt class="flex items-center gap-2 text-sm text-base-content/60">
+            <Icon name={`lucide:${item.icon}`} size="sm" />
+            {item.label}
+          </dt>
+          <dd class="text-sm font-medium text-right">{item.value}</dd>
+        </div>
+      ))
+    }
+  </dl>
+</Card>

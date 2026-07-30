@@ -1,0 +1,165 @@
+---
+import '../styles/global.css';
+import SiteHeader from '@/components/organisms/SiteHeader.astro';
+import SiteFooter from '@/components/organisms/SiteFooter.astro';
+import ReadingProgress from '@/components/organisms/ReadingProgress.astro';
+import JsonLd from '@/components/JsonLd.astro';
+import { getOrgConfig, buildResolvedAuthor } from '@/utils/org-config';
+import { getAuthor } from '@/utils/get-author';
+
+interface Props {
+  title: string;
+  description: string;
+  breadcrumbs?: { label: string; href?: string }[];
+  currentSection?: string;
+  image?: string;
+  publishedTime?: string;
+  author?: string;
+  noIndex?: boolean;
+  frontmatter?: Record<string, unknown>;
+}
+
+const {
+  title,
+  description,
+  breadcrumbs = [],
+  currentSection,
+  image = 'https://images.pexels.com/photos/268415/pexels-photo-268415.jpeg?auto=compress&cs=tinysrgb&w=1200&h=630&fit=crop',
+  publishedTime,
+  author,
+  noIndex = false,
+  frontmatter,
+} = Astro.props;
+
+const resolvedAuthor = author ? (getAuthor(author)?.name ?? author) : undefined;
+const fm = frontmatter as Record<string, unknown> | undefined;
+
+const fmTags = (Array.isArray(fm?.tags) ? fm.tags : []) as string[];
+const fmCategories = (Array.isArray(fm?.categories) ? fm.categories : []) as string[];
+const fmType = fm?.type ? String(fm.type) : '';
+
+const ogTitle = String(fm?.socialTitle ?? title);
+const ogDesc = String(fm?.socialDescription ?? description);
+const ogImage = String(fm?.socialImage ?? image);
+const ogTwitterCard = String(fm?.twitterCard ?? 'summary_large_image');
+
+const canonicalURL = Astro.site ? new URL(Astro.url.pathname, Astro.site) : Astro.url;
+const siteUrl = String(Astro.site ?? canonicalURL.origin);
+
+const org = getOrgConfig();
+---
+
+<!doctype html>
+<html lang="en" data-theme="vedify">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="author" content={resolvedAuthor || 'Vedify'} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
+    <link rel="canonical" href={canonicalURL} />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content={ogTitle} />
+    <meta property="og:description" content={ogDesc} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:site_name" content={org.name || 'Vedify'} />
+    <meta name="twitter:card" content={ogTwitterCard} />
+    <meta name="twitter:title" content={ogTitle} />
+    <meta name="twitter:description" content={ogDesc} />
+    <meta name="twitter:image" content={ogImage} />
+    {publishedTime && <meta property="article:published_time" content={publishedTime} />}
+    {noIndex && <meta name="robots" content="noindex, nofollow" />}
+    <meta name="generator" content={Astro.generator} />
+    <title>{ogTitle} | Vedify</title>
+    {
+      fm && (
+        <JsonLd
+          frontmatter={fm}
+          siteUrl={siteUrl}
+          author={buildResolvedAuthor(resolvedAuthor || org.name || 'Vedify')}
+          organization={org}
+        />
+      )
+    }
+    <script is:inline>
+      (() => {
+        var stored = localStorage.getItem('daisyui-theme');
+        var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        document.documentElement.setAttribute(
+          'data-theme',
+          stored || (prefersDark ? 'vedify-dark' : 'vedify'),
+        );
+        var dim = localStorage.getItem('vedify-dim-mode');
+        if (dim && dim !== 'default') document.documentElement.setAttribute('data-dim-mode', dim);
+        var f = localStorage.getItem('vedify-font');
+        if (f)
+          document.documentElement.style.setProperty(
+            '--reading-font',
+            f === 'serif'
+              ? 'Georgia, serif'
+              : f === 'mono'
+                ? getComputedStyle(document.documentElement)
+                    .getPropertyValue('--font-mono')
+                    .trim() || 'monospace'
+                : getComputedStyle(document.documentElement)
+                    .getPropertyValue('--font-sans')
+                    .trim() || 'sans-serif',
+          );
+        var s = localStorage.getItem('vedify-font-size');
+        if (s) document.documentElement.style.setProperty('--reading-size', s + 'px');
+      })();
+    </script>
+  </head>
+  <body class="min-h-screen bg-base-100 text-base-content antialiased">
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 z-50 btn btn-primary btn-sm"
+      >Skip to main content</a
+    >
+    <ReadingProgress />
+    <SiteHeader breadcrumbs={breadcrumbs} currentTitle={currentSection} />
+    <main id="main-content" class="flex-1" data-pagefind-body>
+      <slot />
+    </main>
+    <SiteFooter />
+    <div class="h-safe-bottom md:hidden"></div>
+
+    <!-- Pagefind indexing metadata (hidden from users but indexed for filters/sort/meta) -->
+    <div hidden>
+      {
+        resolvedAuthor && (
+          <span data-pagefind-filter="author" data-pagefind-meta="author">
+            {resolvedAuthor}
+          </span>
+        )
+      }
+      {fmTags.length > 0 && fmTags.map((t) => <span data-pagefind-filter="tag">{t}</span>)}
+      {fmTags.length > 0 && <span data-pagefind-meta="tags">{fmTags.join(',')}</span>}
+      {
+        fmCategories.length > 0 &&
+          fmCategories.map((c) => <span data-pagefind-filter="category">{c}</span>)
+      }
+      {
+        fmCategories.length > 0 && (
+          <span data-pagefind-meta="categories">{fmCategories.join(',')}</span>
+        )
+      }
+      {
+        fmType && (
+          <span data-pagefind-filter="type" data-pagefind-meta="type">
+            {fmType}
+          </span>
+        )
+      }
+      {
+        publishedTime && (
+          <span data-pagefind-sort="date" data-pagefind-meta="date">
+            {publishedTime}
+          </span>
+        )
+      }
+    </div>
+  </body>
+</html>

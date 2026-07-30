@@ -1,0 +1,359 @@
+---
+import { Icon } from 'astro-icon/components';
+import Logo from '@/components/atoms/Logo.astro';
+import ThemeToggle from '@/components/atoms/ThemeToggle.astro';
+import ReadingToolbar from '@/components/molecules/ReadingToolbar.astro';
+
+interface NavChild {
+  label: string;
+  href: string;
+  icon: string;
+  description?: string;
+}
+
+interface NavItem {
+  label: string;
+  href?: string;
+  children?: NavChild[];
+}
+
+const navigation: NavItem[] = [
+  {
+    label: 'Content',
+    children: [
+      {
+        label: 'Essays & Articles',
+        href: '/essay',
+        icon: 'file-text',
+        description: 'In-depth analysis and opinions',
+      },
+      { label: 'Tutorials', href: '/tutorial', icon: 'code', description: 'Learn by building' },
+      {
+        label: 'Courses',
+        href: '/course',
+        icon: 'book-open',
+        description: 'Structured learning paths',
+      },
+      { label: 'Podcasts', href: '/podcast', icon: 'mic', description: 'Listen on the go' },
+      { label: 'Recipes', href: '/recipe', icon: 'utensils', description: 'Culinary guides' },
+    ],
+  },
+  {
+    label: 'Resources',
+    children: [
+      { label: 'Books', href: '/book', icon: 'book-open', description: 'Book recommendations' },
+      {
+        label: 'Research',
+        href: '/research-paper',
+        icon: 'file-text',
+        description: 'Academic papers',
+      },
+      { label: 'Patents', href: '/patent', icon: 'award', description: 'Innovation records' },
+      { label: 'Quotes', href: '/quote', icon: 'quote', description: 'Inspirational quotes' },
+    ],
+  },
+  {
+    label: 'Events',
+    children: [
+      {
+        label: 'Hackathons',
+        href: '/event',
+        icon: 'trophy',
+        description: 'Competitions and challenges',
+      },
+      {
+        label: 'Conferences',
+        href: '/conference',
+        icon: 'calendar',
+        description: 'Industry gatherings',
+      },
+      { label: 'Workshops', href: '/workshop', icon: 'wrench', description: 'Hands-on learning' },
+      { label: 'Webinars', href: '/webinar', icon: 'video', description: 'Online presentations' },
+    ],
+  },
+  { label: 'About', href: '/about' },
+];
+
+interface Props {
+  breadcrumbs?: { label: string; href?: string }[];
+  currentTitle?: string;
+}
+
+const { breadcrumbs = [], currentTitle } = Astro.props;
+---
+
+<header
+  id="site-header"
+  class="sticky top-0 z-50 w-full border-b border-base-300 bg-base-100/80 backdrop-blur-xl transition-all duration-300"
+>
+  <div class="navbar mx-auto max-w-7xl px-4 min-h-16">
+    <div class="navbar-start gap-0">
+      <div class="drawer lg:hidden">
+        <input id="nav-drawer" type="checkbox" class="drawer-toggle" />
+        <div class="drawer-side z-50">
+          <label for="nav-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
+          <div class="min-h-full w-80 bg-base-100 p-0 flex flex-col">
+            <div class="flex items-center justify-between p-4 border-b border-base-300">
+              <label for="nav-drawer" class="btn btn-ghost btn-sm btn-circle">
+                <Icon name="lucide:x" class="h-5 w-5" />
+              </label>
+            </div>
+            <nav class="flex-1 overflow-y-auto p-4">
+              {
+                navigation.map((item) => (
+                  <div class="mb-4">
+                    {item.children ? (
+                      <>
+                        <p class="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-2 px-3">
+                          {item.label}
+                        </p>
+                        <div class="space-y-1">
+                          {item.children.map((child) => (
+                            <a
+                              href={child.href}
+                              class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-base-200 transition-colors"
+                            >
+                              <Icon
+                                name={`lucide:${child.icon}`}
+                                class="h-4 w-4 text-base-content/60"
+                              />
+                              <div>
+                                <p class="font-medium text-sm">{child.label}</p>
+                                {child.description && (
+                                  <p class="text-xs text-base-content/50">{child.description}</p>
+                                )}
+                              </div>
+                            </a>
+                          ))}
+                        </div>
+                      </>
+                    ) : (
+                      <a
+                        href={item.href}
+                        class="block px-3 py-2 rounded-lg hover:bg-base-200 transition-colors font-medium"
+                      >
+                        {item.label}
+                      </a>
+                    )}
+                  </div>
+                ))
+              }
+            </nav>
+            <div class="p-4 border-t border-base-300">
+              <a href="/essay" class="btn btn-primary w-full">Subscribe</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <label for="nav-drawer" class="btn btn-ghost btn-circle lg:hidden">
+        <Icon name="lucide:menu" class="h-5 w-5" />
+        <span class="sr-only">Toggle menu</span>
+      </label>
+
+      <a href="/" class="flex items-center gap-2 group">
+        <Logo size="sm" ring="none" class="transition-transform group-hover:scale-105" />
+        <span class="font-semibold text-lg hidden sm:inline">Vedify</span>
+      </a>
+
+      <nav class="hidden lg:flex items-center gap-1 ml-4">
+        {
+          navigation.map((item) =>
+            item.children ? (
+              <div class="dropdown dropdown-bottom">
+                <button tabindex="0" role="button" class="btn btn-ghost gap-1">
+                  {item.label}
+                  <Icon name="lucide:chevron-down" class="h-3 w-3" />
+                </button>
+                <ul
+                  tabindex="0"
+                  class="dropdown-content z-50 menu p-2 shadow-lg bg-base-100 rounded-box w-72 mt-2 border border-base-300"
+                >
+                  <li class="menu-title">{item.label}</li>
+                  {item.children.map((child) => (
+                    <li>
+                      <a href={child.href} class="flex items-start gap-3">
+                        <Icon
+                          name={`lucide:${child.icon}`}
+                          class="h-4 w-4 mt-0.5 text-base-content/60"
+                        />
+                        <span>
+                          <span class="block font-medium">{child.label}</span>
+                          {child.description && (
+                            <span class="block text-xs text-base-content/50">
+                              {child.description}
+                            </span>
+                          )}
+                        </span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <a href={item.href} class="btn btn-ghost">
+                {item.label}
+              </a>
+            ),
+          )
+        }
+      </nav>
+    </div>
+
+    <div class="navbar-end gap-1">
+      <div id="search-wrapper" class="hidden sm:flex items-center gap-1">
+        <div id="search-inline" class="hidden">
+          <form action="/search" method="GET" class="flex items-center gap-1">
+            <input
+              id="search-input"
+              type="text"
+              name="q"
+              placeholder="Search..."
+              autocomplete="off"
+              class="input input-bordered input-sm w-48 lg:w-64"
+            />
+            <button type="submit" class="btn btn-ghost btn-circle btn-sm" aria-label="Search">
+              <Icon name="lucide:search" class="h-4 w-4" />
+            </button>
+          </form>
+        </div>
+        <button id="search-trigger" class="btn btn-ghost btn-circle" aria-label="Toggle search">
+          <Icon name="lucide:search" class="h-4 w-4" />
+        </button>
+      </div>
+      <button
+        id="shortcuts-trigger"
+        class="btn btn-ghost btn-circle hidden sm:flex"
+        aria-label="Keyboard shortcuts"
+      >
+        <Icon name="lucide:keyboard" class="h-4 w-4" />
+      </button>
+      <ThemeToggle />
+      <ReadingToolbar class="hidden md:flex" />
+      <a href="/essay" class="btn btn-primary btn-sm hidden sm:flex">Subscribe</a>
+    </div>
+  </div>
+
+  {
+    breadcrumbs.length > 0 && (
+      <div class="border-t border-base-300 bg-base-200/50 hidden md:block">
+        <div class="mx-auto max-w-7xl px-4 py-2">
+          <nav class="flex items-center gap-2 text-sm text-base-content/60">
+            {breadcrumbs.map((crumb, i) => (
+              <span class="flex items-center gap-2">
+                {crumb.href ? (
+                  <a href={crumb.href} class="hover:text-base-content transition-colors">
+                    {crumb.label}
+                  </a>
+                ) : (
+                  <span class={i === breadcrumbs.length - 1 ? 'text-base-content font-medium' : ''}>
+                    {crumb.label}
+                  </span>
+                )}
+                {i < breadcrumbs.length - 1 && <Icon name="lucide:chevron-right" class="h-3 w-3" />}
+              </span>
+            ))}
+          </nav>
+        </div>
+      </div>
+    )
+  }
+
+  {
+    currentTitle && (
+      <div class="lg:hidden border-t border-base-300 px-4 py-2 bg-base-200/50">
+        <p class="text-sm font-medium truncate">{currentTitle}</p>
+      </div>
+    )
+  }
+</header>
+
+<dialog id="shortcuts-modal" class="modal">
+  <div class="modal-box w-full max-w-md">
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-lg font-semibold flex items-center gap-2">
+        <Icon name="lucide:keyboard" class="h-5 w-5" />
+        Keyboard Shortcuts
+      </h2>
+      <form method="dialog">
+        <button class="btn btn-ghost btn-circle btn-sm"
+          ><Icon name="lucide:x" class="h-5 w-5" /></button
+        >
+      </form>
+    </div>
+    <div class="space-y-1">
+      {
+        [
+          { keys: ['J', '→'], action: 'Next section' },
+          { keys: ['K', '←'], action: 'Previous section' },
+          { keys: ['L'], action: 'Like this content' },
+          { keys: ['B'], action: 'Bookmark for later' },
+          { keys: ['T'], action: 'Play/Pause audio' },
+          { keys: ['⌘', 'K'], action: 'Open search' },
+          { keys: ['?'], action: 'Show this help' },
+          { keys: ['Esc'], action: 'Close modal' },
+        ].map((shortcut) => (
+          <div class="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-base-200">
+            <span class="text-sm text-base-content/60">{shortcut.action}</span>
+            <div class="flex gap-1">
+              {shortcut.keys.map((key) => (
+                <kbd class="kbd kbd-sm">{key}</kbd>
+              ))}
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop"><button>close</button></form>
+</dialog>
+
+<script>
+  const searchWrapper = document.getElementById('search-wrapper');
+  const searchInline = document.getElementById('search-inline');
+  const searchTrigger = document.getElementById('search-trigger');
+  const searchInput = document.getElementById('search-input') as HTMLInputElement | null;
+
+  function openSearch() {
+    searchInline?.classList.remove('hidden');
+    searchTrigger?.classList.add('hidden');
+    setTimeout(() => searchInput?.focus(), 50);
+  }
+
+  function closeSearch() {
+    searchInline?.classList.add('hidden');
+    searchTrigger?.classList.remove('hidden');
+    searchInput && (searchInput.value = '');
+  }
+
+  searchTrigger?.addEventListener('click', openSearch);
+
+  document.addEventListener('keydown', (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      e.preventDefault();
+      if (searchInline?.classList.contains('hidden')) {
+        openSearch();
+      } else {
+        searchInput?.focus();
+      }
+    }
+    if (e.key === 'Escape' && searchInline && !searchInline.classList.contains('hidden')) {
+      closeSearch();
+    }
+    if (
+      e.key === '?' &&
+      !e.ctrlKey &&
+      !e.metaKey &&
+      !(e.target as HTMLElement).matches('input,textarea')
+    ) {
+      e.preventDefault();
+      (document.getElementById('shortcuts-modal') as HTMLDialogElement)?.showModal();
+    }
+  });
+
+  const header = document.getElementById('site-header');
+  const onScroll = () => {
+    if (window.scrollY > 10) header?.classList.add('shadow-sm');
+    else header?.classList.remove('shadow-sm');
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+</script>

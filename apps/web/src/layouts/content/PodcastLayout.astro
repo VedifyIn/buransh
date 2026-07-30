@@ -1,0 +1,86 @@
+---
+import { Icon } from 'astro-icon/components';
+import { podcastSchema } from '@vedify/schema';
+import type { z } from '@vedify/schema';
+import ContentLayout from '@/layouts/ContentLayout.astro';
+import MediaPlayer from '@/components/organisms/MediaPlayer.astro';
+import AuthorCard from '@/components/organisms/AuthorCard.astro';
+import TagList from '@/components/molecules/TagList.astro';
+import InteractionGroup from '@/components/molecules/InteractionGroup.astro';
+import CommentSection from '@/components/molecules/CommentSection.astro';
+import AdSlot from '@/components/molecules/AdSlot.astro';
+import { getAuthor } from '@/utils/get-author';
+
+type Props = z.infer<typeof podcastSchema>;
+const content = Astro.props as Props;
+const resolvedAuthor = getAuthor(content.author) ?? { name: content.author };
+
+const mediaUrl = content.media?.url ?? '#';
+const mediaDuration = content.media?.duration ?? '';
+---
+
+<ContentLayout
+  frontmatter={content}
+  title={content.title}
+  description={content.description}
+  breadcrumbs={[
+    { label: 'Home', href: '/' },
+    { label: 'Podcasts', href: '/podcast' },
+    { label: `Ep ${content.episodeNumber ?? ''}` },
+  ]}
+  currentSection={`Podcast Episode ${content.episodeNumber ?? ''}`}
+>
+  <div class="max-w-4xl mx-auto px-4 py-8 lg:py-12">
+    <div class="flex items-center gap-2 mb-4">
+      <span class="badge badge-primary gap-1"
+        ><Icon name="lucide:mic" class="h-3.5 w-3.5" /> Podcast</span
+      >
+      {
+        content.episodeNumber && (
+          <span class="badge badge-ghost">Episode {content.episodeNumber}</span>
+        )
+      }
+    </div>
+    <h1 class="text-3xl md:text-4xl font-bold tracking-tight mb-3">{content.title}</h1>
+    <p class="text-lg text-base-content/60 mb-6">{content.description}</p>
+    <div class="flex items-center gap-4 text-sm text-base-content/60 mb-6">
+      <span class="flex items-center gap-1"
+        ><Icon name="lucide:calendar" class="h-3.5 w-3.5" /> {content.datePublished}</span
+      >
+      <span>&bull;</span>
+      <span class="flex items-center gap-1"
+        ><Icon name="lucide:clock" class="h-3.5 w-3.5" /> {mediaDuration || '48 min'}</span
+      >
+      <span>&bull;</span>
+      <span class="flex items-center gap-1"
+        ><Icon name="lucide:headphones" class="h-3.5 w-3.5" /> 8,204 plays</span
+      >
+    </div>
+    <MediaPlayer
+      type="audio"
+      src={mediaUrl}
+      duration={mediaDuration || '48:12'}
+      title={content.title}
+      transcript={[]}
+    />
+    <div class="prose-vedify mt-8"><slot /></div>
+    <div class="mt-6"><TagList tags={content.tags} /></div>
+    <div class="my-8"><InteractionGroup /></div>
+    <div class="my-8"><AdSlot variant="banner" /></div>
+    <div class="mt-8">
+      <AuthorCard
+        name={resolvedAuthor.name}
+        role={resolvedAuthor.role ?? 'Field CTO, EdgeCorp'}
+        bio={resolvedAuthor.bio ??
+          'Distributed systems veteran focused on edge-native architectures.'}
+        avatar={resolvedAuthor.avatar ??
+          'https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop'}
+        stats={resolvedAuthor.stats ?? [
+          { label: 'Episodes', value: 14 },
+          { label: 'Followers', value: '5.4k' },
+        ]}
+      />
+    </div>
+    <div class="mt-12"><CommentSection /></div>
+  </div>
+</ContentLayout>

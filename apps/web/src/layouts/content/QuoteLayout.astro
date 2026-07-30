@@ -1,0 +1,87 @@
+---
+import { Icon } from 'astro-icon/components';
+import { quoteSchema } from '@vedify/schema';
+import type { z } from '@vedify/schema';
+import ContentLayout from '@/layouts/ContentLayout.astro';
+import InteractionGroup from '@/components/molecules/InteractionGroup.astro';
+import CommentSection from '@/components/molecules/CommentSection.astro';
+import TagList from '@/components/molecules/TagList.astro';
+
+type Props = z.infer<typeof quoteSchema>;
+const content = Astro.props as Props;
+
+const quoteText = content.quote?.text ?? content.title;
+const quoteAuthor = content.quote?.attributedTo?.name ?? content.author;
+const quoteContext = content.quote?.context ?? '';
+const related = [
+  { text: 'Prediction is very difficult, especially about the future.', author: 'Niels Bohr' },
+  { text: 'The future depends on what you do today.', author: 'Mahatma Gandhi' },
+  { text: 'Innovation distinguishes between a leader and a follower.', author: 'Steve Jobs' },
+];
+---
+
+<ContentLayout
+  frontmatter={content}
+  title={`Quote: "${quoteText}"`}
+  description={`A quote by ${quoteAuthor}, with context and related quotations.`}
+  breadcrumbs={[
+    { label: 'Home', href: '/' },
+    { label: 'Quotes', href: '/quote' },
+    { label: quoteAuthor },
+  ]}
+  currentSection="Quote"
+>
+  <div class="max-w-3xl mx-auto px-4 py-12 lg:py-20 text-center">
+    <div class="mb-8"><Icon name="lucide:quote" class="h-16 w-16 mx-auto text-primary/30" /></div>
+    <blockquote
+      class="text-3xl md:text-5xl font-serif font-medium leading-tight tracking-tight mb-8 max-w-2xl mx-auto"
+    >
+      &ldquo;{quoteText}&rdquo;
+    </blockquote>
+    <div class="mb-12"><p class="text-xl font-semibold">&mdash; {quoteAuthor}</p></div>
+    {
+      quoteContext && (
+        <div class="card bg-base-100 border border-base-300 text-left max-w-xl mx-auto">
+          <div class="card-body">
+            <h3 class="font-semibold flex items-center gap-2">
+              <Icon name="lucide:info" class="h-4 w-4" /> Context
+            </h3>
+            <p class="text-base-content/70">{quoteContext}</p>
+          </div>
+        </div>
+      )
+    }
+    <div class="flex flex-wrap justify-center gap-2 my-8">
+      <button class="btn btn-ghost btn-sm gap-2"
+        ><Icon name="lucide:share-2" class="h-4 w-4" /> Share</button
+      >
+      <button class="btn btn-ghost btn-sm gap-2"
+        ><Icon name="lucide:image" class="h-4 w-4" /> Download Image</button
+      >
+      <button class="btn btn-ghost btn-sm gap-2"
+        ><Icon name="lucide:bookmark" class="h-4 w-4" /> Save</button
+      >
+    </div>
+    <div class="text-left max-w-xl mx-auto"><InteractionGroup /></div>
+    <div class="text-left max-w-xl mx-auto mt-12">
+      <h3 class="text-xl font-bold mb-4">Related quotes</h3>
+      <div class="space-y-4">
+        {
+          related.map((q) => (
+            <a
+              href="/quote"
+              class="block card bg-base-100 border border-base-300 hover:shadow-md transition-shadow"
+            >
+              <div class="card-body p-4">
+                <p class="font-serif italic text-lg">&ldquo;{q.text}&rdquo;</p>
+                <p class="text-sm text-base-content/60 mt-1">&mdash; {q.author}</p>
+              </div>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+    <div class="text-left max-w-xl mx-auto mt-8"><TagList tags={content.tags} /></div>
+    <div class="text-left max-w-xl mx-auto mt-12"><CommentSection /></div>
+  </div>
+</ContentLayout>

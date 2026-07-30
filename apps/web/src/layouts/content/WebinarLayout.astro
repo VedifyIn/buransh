@@ -1,0 +1,119 @@
+---
+import { Icon } from 'astro-icon/components';
+import type { BaseFrontmatter } from '@vedify/schema';
+import ContentLayout from '@/layouts/ContentLayout.astro';
+import EventMeta from '@/components/organisms/EventMeta.astro';
+import InteractionGroup from '@/components/molecules/InteractionGroup.astro';
+import CommentSection from '@/components/molecules/CommentSection.astro';
+import TagList from '@/components/molecules/TagList.astro';
+
+type Props = BaseFrontmatter & { eventType?: string };
+const content = Astro.props as Props;
+const eventType = content.eventType ?? 'Webinar';
+
+const event = {
+  date: 'Jul 30, 2026',
+  time: '11:00 AM PST',
+  location: 'Online (Zoom)',
+  venue: 'Zoom Webinar',
+  duration: '90 min',
+  price: 'Free',
+  capacity: '1,000 attendees',
+};
+const speaker = {
+  name: 'Marcus Chen',
+  role: 'Principal Engineer',
+  avatar:
+    'https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop',
+};
+const takeaways = [
+  'How event sourcing changes the cost of audit and time travel',
+  'When NOT to use event sourcing — and what to use instead',
+  'Concrete patterns for snapshotting and schema evolution',
+  'Production war stories from a 4-year deployment',
+];
+---
+
+<ContentLayout
+  frontmatter={content}
+  title={content.title}
+  description={content.description}
+  breadcrumbs={[
+    { label: 'Home', href: '/' },
+    { label: 'Webinars', href: '/webinar' },
+    { label: content.title },
+  ]}
+  currentSection={eventType}
+>
+  <div class="max-w-7xl mx-auto px-4 py-8 lg:py-12">
+    <div class="grid lg:grid-cols-[1fr_320px] gap-8">
+      <div class="min-w-0">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="badge badge-primary gap-1"
+            ><Icon name="lucide:video" class="h-3.5 w-3.5" /> {eventType}</span
+          >
+          <span class="badge badge-success">Free</span>
+          <span class="badge badge-warning">Live Soon</span>
+        </div>
+        <h1 class="text-3xl md:text-4xl font-bold tracking-tight mb-3">{content.title}</h1>
+        <p class="text-lg text-base-content/60 mb-6">{content.description}</p>
+        <div class="card bg-base-100 border border-base-300 mb-8">
+          <div class="card-body sm:flex-row items-center gap-6">
+            <div class="avatar">
+              <div class="w-20 rounded-full ring ring-primary ring-offset-2 ring-offset-base-100">
+                <img src={speaker.avatar} alt={speaker.name} />
+              </div>
+            </div>
+            <div>
+              <p class="text-sm text-base-content/60">Speaker</p><h3 class="text-xl font-semibold">
+                {speaker.name}
+              </h3><p class="text-base-content/60">{speaker.role}</p>
+            </div>
+          </div>
+        </div>
+        <div class="card bg-base-100 border border-base-300 mb-8">
+          <div class="card-body">
+            <h2 class="card-title">What you'll learn</h2>
+            <ul class="space-y-2 mt-2">
+              {
+                takeaways.map((t) => (
+                  <li class="flex items-start gap-2">
+                    <Icon
+                      name="lucide:check-circle-2"
+                      class="h-5 w-5 text-success shrink-0 mt-0.5"
+                    />{' '}
+                    {t}
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+        </div>
+        <div class="prose-vedify"><slot /></div>
+        <div class="mt-8"><TagList tags={content.tags} /></div>
+        <div class="my-8"><InteractionGroup /></div>
+        <div class="mt-12"><CommentSection /></div>
+      </div>
+      <aside class="space-y-6 lg:sticky lg:top-24 lg:self-start">
+        <div class="card bg-base-100 border border-base-300">
+          <div class="card-body">
+            <div class="countdown mb-3">
+              <span style="--value:10;"></span>d <span style="--value:4;"></span>h <span
+                style="--value:32;"></span>m <span style="--value:18;"></span>s
+            </div>
+            <button class="btn btn-primary w-full mb-2 gap-2"
+              ><Icon name="lucide:video" class="h-4 w-4" /> Register Free</button
+            >
+            <a href="#" class="btn btn-outline w-full gap-2"
+              ><Icon name="lucide:calendar-plus" class="h-4 w-4" /> Add to Calendar</a
+            >
+            <p class="text-xs text-base-content/50 text-center mt-2">
+              Recording sent to all registrants
+            </p>
+          </div>
+        </div>
+        <EventMeta event={event} type={eventType} />
+      </aside>
+    </div>
+  </div>
+</ContentLayout>

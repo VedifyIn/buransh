@@ -1,0 +1,86 @@
+---
+import { Icon } from 'astro-icon/components';
+
+interface Props {
+  variant?:
+    | 'primary'
+    | 'secondary'
+    | 'accent'
+    | 'ghost'
+    | 'outline'
+    | 'success'
+    | 'warning'
+    | 'error'
+    | 'neutral';
+  size?: 'xs' | 'sm' | 'md' | 'lg';
+  shape?: 'default' | 'circle' | 'square';
+  icon?: string;
+  iconRight?: string;
+  href?: string;
+  type?: 'button' | 'submit' | 'reset';
+  disabled?: boolean;
+  class?: string;
+}
+
+const {
+  variant = 'ghost',
+  size = 'md',
+  shape = 'default',
+  icon,
+  iconRight,
+  href,
+  type = 'button',
+  disabled = false,
+  class: className = '',
+} = Astro.props;
+
+const sizes: Record<string, string> = {
+  xs: 'btn-xs',
+  sm: 'btn-sm',
+  md: 'btn-md',
+  lg: 'btn-lg',
+};
+
+const variants: Record<string, string> = {
+  primary: 'btn-primary',
+  secondary: 'btn-secondary',
+  accent: 'btn-accent',
+  ghost: 'btn-ghost',
+  outline: 'btn-outline',
+  success: 'btn-success',
+  warning: 'btn-warning',
+  error: 'btn-error',
+  neutral: 'btn-neutral',
+};
+
+const shapes: Record<string, string> = {
+  default: '',
+  circle: 'btn-circle',
+  square: 'btn-square',
+};
+
+const iconSizes: Record<string, string> = {
+  xs: 'h-3.5 w-3.5',
+  sm: 'h-4 w-4',
+  md: 'h-5 w-5',
+  lg: 'h-6 w-6',
+};
+
+const cls = `btn ${sizes[size]} ${variants[variant]} ${shapes[shape]} gap-2 ${className}`;
+---
+
+{
+  href ? (
+    <a href={href} class={cls} aria-disabled={disabled}>
+      {icon && <Icon name={`lucide:${icon}`} class={iconSizes[size]} />}
+      <slot />
+      {iconRight && <Icon name={`lucide:${iconRight}`} class={iconSizes[size]} />}
+    </a>
+  ) : (
+    <button type={type} disabled={disabled} class={cls}>
+      {icon && <Icon name={`lucide:${icon}`} class={iconSizes[size]} />}
+      <slot />
+      {iconRight && <Icon name={`lucide:${iconRight}`} class={iconSizes[size]} />}
+    </button>
+  )
+}

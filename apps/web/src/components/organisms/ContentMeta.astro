@@ -1,0 +1,41 @@
+---
+import { Icon } from 'astro-icon/components';
+
+interface MetaItem {
+  icon: string;
+  label: string;
+  value: string;
+}
+
+interface Props {
+  items: MetaItem[];
+  title?: string;
+}
+
+const { items, title } = Astro.props;
+---
+
+<div class="card bg-base-100 border border-base-300">
+  {
+    title && (
+      <div class="card-body p-4 pb-2">
+        <h3 class="font-semibold">{title}</h3>
+      </div>
+    )
+  }
+  <div class="card-body p-4 pt-0">
+    <dl class="space-y-3">
+      {
+        items.map((item) => (
+          <div class="flex items-center justify-between gap-3">
+            <dt class="flex items-center gap-2 text-sm text-base-content/60">
+              <Icon name={`lucide:${item.icon}`} class="h-4 w-4" />
+              {item.label}
+            </dt>
+            <dd class="text-sm font-medium text-right">{item.value}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </div>
+</div>

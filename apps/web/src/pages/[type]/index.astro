@@ -1,0 +1,41 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '@/layouts/Layout.astro';
+import CollectionGrid from '@/components/molecules/CollectionGrid.astro';
+import { getTypeInfoByUrl } from '@/lib/content/type-registry';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('content');
+  const typeGroups = new Set<string>();
+  for (const entry of entries) {
+    const typeSlug = entry.id.split('/')[0];
+    typeGroups.add(typeSlug);
+  }
+  return Array.from(typeGroups).map((type) => ({ params: { type }, props: { type } }));
+}
+
+type Props = { type: string };
+const { type } = Astro.props;
+const typeInfo = getTypeInfoByUrl(type);
+
+const entries = (await getCollection('content'))
+  .filter((e) => e.data.status !== 'archived' && e.id.startsWith(`${type}/`))
+  .sort((a, b) => {
+    const dateA = a.data.datePublished ? new Date(a.data.datePublished).getTime() : 0;
+    const dateB = b.data.datePublished ? new Date(b.data.datePublished).getTime() : 0;
+    return dateB - dateA;
+  });
+---
+
+<Layout
+  title={`${typeInfo?.label ?? type} - Vedify`}
+  description={`Browse all ${typeInfo?.label?.toLowerCase() ?? type} content.`}
+>
+  <CollectionGrid
+    title={typeInfo?.label ?? type}
+    entries={entries}
+    basePath={`/${type}`}
+    icon={typeInfo?.icon ?? 'file'}
+    accentClass={typeInfo?.accentClass ?? 'from-primary to-secondary'}
+  />
+</Layout>

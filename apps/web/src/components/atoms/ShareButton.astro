@@ -1,0 +1,30 @@
+---
+import { Icon } from 'astro-icon/components';
+
+interface Props {
+  size?: 'sm' | 'md';
+  platforms?: string[];
+}
+
+const { size = 'md', platforms = ['twitter', 'facebook', 'linkedin', 'link'] } = Astro.props;
+
+const sizes: Record<string, string> = {
+  sm: 'btn-sm btn-circle',
+  md: 'btn-circle',
+};
+
+const iconSizes: Record<string, string> = {
+  sm: 'h-3.5 w-3.5',
+  md: 'h-4 w-4',
+};
+---
+
+<div class="flex items-center gap-1">
+  {
+    platforms.map((platform) => (
+      <button class={`btn btn-ghost ${sizes[size]}`} aria-label={`Share on ${platform}`}>
+        <Icon name={`lucide:${platform}`} class={iconSizes[size]} />
+      </button>
+    ))
+  }
+</div>

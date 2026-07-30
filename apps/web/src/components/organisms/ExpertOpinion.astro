@@ -1,0 +1,32 @@
+---
+import { Icon } from 'astro-icon/components';
+import Card from '@/components/molecules/Card.astro';
+import Avatar from '@/components/atoms/Avatar.astro';
+import RatingStars from '@/components/atoms/RatingStars.astro';
+
+interface Props {
+  expert: string;
+  role: string;
+  avatar: string;
+  quote: string;
+  rating?: number;
+}
+
+const { expert, role, avatar, quote, rating = 5 } = Astro.props;
+---
+
+<Card variant="gradient" gradientFrom="accent" gradientTo="primary" padding="lg">
+  <div class="flex items-start gap-1 mb-2">
+    <RatingStars rating={rating} size="sm" showValue={false} />
+  </div>
+  <blockquote class="text-lg italic leading-relaxed text-base-content/90">
+    &ldquo;{quote}&rdquo;
+  </blockquote>
+  <figcaption class="flex items-center gap-3 mt-4 pt-4 border-t border-base-300">
+    <Avatar src={avatar} alt={expert} size="md" ring="accent" />
+    <div>
+      <p class="font-semibold">{expert}</p>
+      <p class="text-sm text-base-content/60">{role}</p>
+    </div>
+  </figcaption>
+</Card>

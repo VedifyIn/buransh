@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { imageSchema, videoSchema, faqSchema } from './nested';
 import {
+  contentTypeSchema,
   difficultySchema,
   twitterCardSchema,
   seoPrioritySchema,
@@ -16,6 +17,8 @@ export const baseSchema = z.object({
   id: z.string().min(1),
   title: z.string().min(1).max(120),
   description: z.string().min(1).max(200),
+
+  type: contentTypeSchema.optional(),
 
   datePublished: isoDateString,
   dateModified: isoDateString,

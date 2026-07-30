@@ -1,0 +1,337 @@
+---
+import { Icon } from 'astro-icon/components';
+import Layout from '@/layouts/Layout.astro';
+
+const features = [
+  {
+    icon: 'zap',
+    title: 'Instant Sync',
+    desc: 'Your reading progress, bookmarks, and highlights sync across all devices in real time.',
+  },
+  {
+    icon: 'bookmark',
+    title: 'Smart Bookmarks',
+    desc: 'Save articles, tag them, and find them instantly with full-text search.',
+  },
+  {
+    icon: 'highlighter',
+    title: 'Highlights & Notes',
+    desc: 'Highlight passages and attach private notes. Export everything as markdown.',
+  },
+  {
+    icon: 'palette',
+    title: 'Custom Themes',
+    desc: 'Five font sizes, three reading modes, light/dark/system themes. Your reading, your way.',
+  },
+  {
+    icon: 'message-circle',
+    title: ' threaded Comments',
+    desc: 'Reply to specific paragraphs. Upvote helpful comments. Pin community favorites.',
+  },
+  {
+    icon: 'bar-chart-3',
+    title: 'Reading Stats',
+    desc: 'Track your reading streak, total articles, and time spent. Watch your knowledge grow.',
+  },
+];
+
+const steps = [
+  {
+    num: '01',
+    title: 'Create your account',
+    desc: 'Sign up in seconds with just your email. No credit card, no commitment.',
+  },
+  {
+    num: '02',
+    title: 'Pick your interests',
+    desc: 'Tell us what you care about — distributed systems, design, cooking, and more.',
+  },
+  {
+    num: '03',
+    title: 'Start reading',
+    desc: 'Get personalized recommendations and start your learning journey today.',
+  },
+];
+
+const faqs = [
+  {
+    q: 'Is Vedify free to use?',
+    a: 'Yes! Reading all content, bookmarking, highlighting, and commenting are completely free. Premium features like offline mode and advanced analytics may be added later.',
+  },
+  {
+    q: 'Do I need an account to read?',
+    a: 'No — all content is publicly readable without an account. You only need to sign in to sync bookmarks, preferences, and leave comments.',
+  },
+  {
+    q: 'What content types are available?',
+    a: 'Essays, tutorials, courses, course lessons, podcasts, recipes, books, book reviews, research papers, patents, quotes, events, conferences, workshops, and webinars — fifteen formats in total.',
+  },
+  {
+    q: 'Can I subscribe via RSS?',
+    a: 'Absolutely. Our RSS feed at /rss.xml includes all published content across every collection.',
+  },
+  {
+    q: 'How do I change my reading preferences?',
+    a: 'Go to Settings after signing in. You can adjust theme, font size, and reading mode. Changes sync instantly.',
+  },
+];
+---
+
+<Layout
+  title="Vedify - Launch"
+  description="Vedify is live. Sign up and start your learning journey today."
+>
+  <!-- Hero / Launch announcement -->
+  <section class="relative overflow-hidden py-20 lg:py-32">
+    <div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5">
+    </div>
+    <div
+      class="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-primary/10 rounded-full blur-3xl opacity-50"
+    >
+    </div>
+
+    <div class="relative max-w-4xl mx-auto px-4 text-center">
+      <div
+        class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-success/10 text-success text-sm font-semibold mb-8 animate-bounce-slow"
+      >
+        <span class="relative flex h-3 w-3">
+          <span
+            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"
+          ></span>
+          <span class="relative inline-flex rounded-full h-3 w-3 bg-success"></span>
+        </span>
+        Now Live
+      </div>
+
+      <h1 class="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-6">
+        Vedify is
+        <span class="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+          live
+        </span>
+      </h1>
+
+      <p class="text-xl sm:text-2xl text-base-content/70 mb-10 max-w-2xl mx-auto">
+        Your new home for quality content. Essays, tutorials, courses, podcasts, and fifteen content
+        types — all in one beautiful place.
+      </p>
+
+      <div class="flex flex-wrap justify-center gap-4 mb-12">
+        <a
+          href="/login"
+          class="btn btn-primary btn-lg gap-2 shadow-lg shadow-primary/25 hover:shadow-xl hover:-translate-y-0.5 transition-all"
+        >
+          <Icon name="lucide:rocket" class="h-5 w-5" />
+          Get Started Free
+        </a>
+        <a href="/landing" class="btn btn-outline btn-lg gap-2">
+          <Icon name="lucide:eye" class="h-5 w-5" />
+          See Features
+        </a>
+      </div>
+
+      <div class="flex flex-wrap justify-center gap-8 text-sm text-base-content/50">
+        <span class="flex items-center gap-2"
+          ><Icon name="lucide:check" class="h-4 w-4 text-success" /> No credit card required</span
+        >
+        <span class="flex items-center gap-2"
+          ><Icon name="lucide:check" class="h-4 w-4 text-success" /> Free forever</span
+        >
+        <span class="flex items-center gap-2"
+          ><Icon name="lucide:check" class="h-4 w-4 text-success" /> Privacy first</span
+        >
+      </div>
+    </div>
+  </section>
+
+  <!-- Countdown / Launch banner -->
+  <section
+    class="py-8 border-y border-base-300 bg-gradient-to-r from-primary/5 via-secondary/5 to-primary/5"
+  >
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div class="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+            <Icon name="lucide:gift" class="h-5 w-5 text-primary" />
+          </div>
+          <div>
+            <p class="font-semibold">Launch Week Special</p>
+            <p class="text-sm text-base-content/60">
+              Be among the first 1,000 users to get the Founder badge
+            </p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2" id="countdown">
+          <div
+            class="flex flex-col items-center px-3 py-2 rounded-lg bg-base-100 border border-base-300"
+          >
+            <span class="text-2xl font-bold" id="cd-days">--</span>
+            <span class="text-xs text-base-content/50">Days</span>
+          </div>
+          <span class="text-2xl font-bold text-base-content/30">:</span>
+          <div
+            class="flex flex-col items-center px-3 py-2 rounded-lg bg-base-100 border border-base-300"
+          >
+            <span class="text-2xl font-bold" id="cd-hours">--</span>
+            <span class="text-xs text-base-content/50">Hours</span>
+          </div>
+          <span class="text-2xl font-bold text-base-content/30">:</span>
+          <div
+            class="flex flex-col items-center px-3 py-2 rounded-lg bg-base-100 border border-base-300"
+          >
+            <span class="text-2xl font-bold" id="cd-mins">--</span>
+            <span class="text-xs text-base-content/50">Mins</span>
+          </div>
+          <span class="text-2xl font-bold text-base-content/30">:</span>
+          <div
+            class="flex flex-col items-center px-3 py-2 rounded-lg bg-base-100 border border-base-300"
+          >
+            <span class="text-2xl font-bold" id="cd-secs">--</span>
+            <span class="text-xs text-base-content/50">Secs</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="py-16 lg:py-24">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="text-center max-w-2xl mx-auto mb-12">
+        <h2 class="text-3xl md:text-4xl font-bold mb-4">Everything you need to learn</h2>
+        <p class="text-lg text-base-content/60">
+          Powerful features designed for readers who care about quality.
+        </p>
+      </div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {
+          features.map((item) => (
+            <div class="group p-6 rounded-2xl border border-base-300 bg-base-100 hover:shadow-lg hover:border-primary/30 transition-all">
+              <div class="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <Icon name={`lucide:${item.icon}`} class="h-6 w-6 text-primary" />
+              </div>
+              <h3 class="font-semibold text-lg mb-2">{item.title}</h3>
+              <p class="text-sm text-base-content/60">{item.desc}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section class="py-16 bg-base-200/30">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="text-center max-w-2xl mx-auto mb-12">
+        <h2 class="text-3xl md:text-4xl font-bold mb-4">Get started in 3 steps</h2>
+        <p class="text-lg text-base-content/60">It takes less than a minute.</p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-8">
+        {
+          steps.map((step, i) => (
+            <div class="relative">
+              {i < steps.length - 1 && (
+                <div class="hidden md:block absolute top-8 left-1/2 w-full h-0.5 bg-gradient-to-r from-primary/30 to-transparent" />
+              )}
+              <div class="relative flex flex-col items-center text-center">
+                <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center mb-4 shadow-lg shadow-primary/20">
+                  <span class="text-2xl font-bold text-primary-content">{step.num}</span>
+                </div>
+                <h3 class="font-semibold text-lg mb-2">{step.title}</h3>
+                <p class="text-sm text-base-content/60 max-w-xs">{step.desc}</p>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+
+      <div class="text-center mt-12">
+        <a
+          href="/login"
+          class="btn btn-primary btn-lg gap-2 shadow-lg shadow-primary/25 hover:shadow-xl hover:-translate-y-0.5 transition-all"
+        >
+          <Icon name="lucide:rocket" class="h-5 w-5" />
+          Launch Your Journey
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="py-16 lg:py-24">
+    <div class="max-w-3xl mx-auto px-4">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-bold mb-4">Frequently asked questions</h2>
+        <p class="text-base-content/60">Everything you need to know about Vedify.</p>
+      </div>
+
+      <div class="space-y-3">
+        {
+          faqs.map((faq) => (
+            <div class="collapse collapse-arrow border border-base-300 rounded-2xl bg-base-100">
+              <input type="radio" name="faq-accordion" />
+              <div class="collapse-title font-semibold">{faq.q}</div>
+              <div class="collapse-content text-base-content/70">
+                <p>{faq.a}</p>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Final CTA -->
+  <section class="py-16 lg:py-24">
+    <div class="max-w-7xl mx-auto px-4">
+      <div
+        class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary to-secondary p-8 md:p-12 lg:p-16 text-center"
+      >
+        <div
+          class="absolute inset-0 opacity-30"
+          style="background-image: radial-gradient(circle, rgba(255,255,255,0.15) 1px, transparent 1px); background-size: 24px 24px;"
+        >
+        </div>
+        <div class="relative max-w-2xl mx-auto">
+          <Icon name="lucide:rocket" class="h-12 w-12 text-primary-content mx-auto mb-4" />
+          <h2 class="text-3xl md:text-4xl font-bold text-primary-content mb-4">Ready to launch?</h2>
+          <p class="text-lg text-primary-content/80 mb-8">
+            Join thousands of curious minds already learning on Vedify.
+          </p>
+          <a href="/login" class="btn btn-neutral btn-lg gap-2 shadow-lg">
+            <Icon name="lucide:arrow-right" class="h-5 w-5" />
+            Get Started Now
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  const target = new Date();
+  target.setDate(target.getDate() + 7);
+  target.setHours(0, 0, 0, 0);
+
+  function updateCountdown() {
+    const now = new Date();
+    const diff = target.getTime() - now.getTime();
+    if (diff <= 0) return;
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+    const pad = (n: number) => String(n).padStart(2, '0');
+    const el = (id: string) => document.getElementById(id);
+    el('cd-days')!.textContent = pad(days);
+    el('cd-hours')!.textContent = pad(hours);
+    el('cd-mins')!.textContent = pad(mins);
+    el('cd-secs')!.textContent = pad(secs);
+  }
+
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+</script>

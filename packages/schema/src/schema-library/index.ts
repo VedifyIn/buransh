@@ -32,6 +32,15 @@ import { deduplicateGraph } from '../utils/deduplicator';
 
 export type { Image, Video, Faq } from '../nested';
 export type { ResolvedAuthor, OrganizationConfig } from './building-blocks';
+export {
+  getWebsiteSchema,
+  getWebPageSchema,
+  getOrganizationSchema,
+  getBreadcrumbSchema,
+  getAuthorSchema,
+  getFAQSchema,
+  getVideoSchema,
+} from './building-blocks';
 
 export type GraphSchema = {
   '@context': 'https://schema.org';

@@ -1,0 +1,146 @@
+---
+import { Icon } from 'astro-icon/components';
+import Logo from '@/components/atoms/Logo.astro';
+
+const footerLinks = {
+  content: [
+    { label: 'Essays', href: '/essay' },
+    { label: 'Tutorials', href: '/tutorial' },
+    { label: 'Courses', href: '/course' },
+    { label: 'Podcasts', href: '/podcast' },
+    { label: 'Recipes', href: '/recipe' },
+    { label: 'Quotes', href: '/quote' },
+  ],
+  resources: [
+    { label: 'Books', href: '/book' },
+    { label: 'Research Papers', href: '/research-paper' },
+    { label: 'Patents', href: '/patent' },
+    { label: 'Book Reviews', href: '/book-review' },
+  ],
+  events: [
+    { label: 'Hackathons', href: '/event' },
+    { label: 'Conferences', href: '/conference' },
+    { label: 'Workshops', href: '/workshop' },
+    { label: 'Webinars', href: '/webinar' },
+  ],
+  company: [
+    { label: 'About Us', href: '/about' },
+    { label: 'Careers', href: '/careers' },
+    { label: 'Contact', href: '/contact' },
+    { label: 'Press', href: '/press' },
+  ],
+  legal: [
+    { label: 'Privacy Policy', href: '/privacy' },
+    { label: 'Terms of Service', href: '/terms' },
+    { label: 'Cookie Policy', href: '/cookies' },
+    { label: 'Accessibility', href: '/accessibility' },
+  ],
+};
+
+const socialLinks = [
+  { label: 'Twitter', href: '#', icon: 'twitter' },
+  { label: 'GitHub', href: '#', icon: 'github' },
+  { label: 'LinkedIn', href: '#', icon: 'linkedin' },
+  { label: 'YouTube', href: '#', icon: 'youtube' },
+  { label: 'RSS Feed', href: '#', icon: 'rss' },
+];
+const year = new Date().getFullYear();
+---
+
+<footer class="bg-base-200/50 border-t border-base-300">
+  <div
+    class="border-b border-base-300 bg-gradient-to-r from-primary/5 via-transparent to-secondary/5"
+  >
+    <div class="mx-auto max-w-7xl px-4 py-12">
+      <div class="max-w-2xl mx-auto text-center">
+        <h3 class="text-2xl font-bold mb-2">Stay in the loop</h3>
+        <p class="text-base-content/60 mb-6">
+          Get the latest essays, tutorials, and courses delivered to your inbox. No spam,
+          unsubscribe anytime.
+        </p>
+        <form class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+          <input type="email" placeholder="Enter your email" class="input input-bordered flex-1" />
+          <button type="submit" class="btn btn-primary">Subscribe</button>
+        </form>
+        <p class="text-xs text-base-content/50 mt-3">
+          By subscribing, you agree to our Privacy Policy.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="mx-auto max-w-7xl px-4 py-12">
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
+      <div class="col-span-2 md:col-span-3 lg:col-span-2">
+        <a href="/" class="flex items-center gap-2 mb-4">
+          <Logo size="md" />
+          <span class="font-bold text-xl">Vedify</span>
+        </a>
+        <p class="text-base-content/60 mb-4 max-w-sm">
+          Quality content for curious minds. Essays, tutorials, courses, and more — crafted with
+          care for the modern web.
+        </p>
+        <div class="flex gap-2">
+          {
+            socialLinks.map((social) => (
+              <a
+                href={social.href}
+                class="btn btn-ghost btn-circle btn-sm"
+                aria-label={social.label}
+              >
+                <Icon name={`lucide:${social.icon}`} class="h-5 w-5" />
+              </a>
+            ))
+          }
+        </div>
+      </div>
+
+      {
+        Object.entries(footerLinks)
+          .slice(0, 4)
+          .map(([key, links]) => (
+            <div>
+              <h4 class="font-semibold mb-4 capitalize">{key}</h4>
+              <ul class="space-y-2">
+                {links.map((link) => (
+                  <li>
+                    <a href={link.href} class="link link-hover text-sm text-base-content/60">
+                      {link.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+      }
+    </div>
+  </div>
+
+  <div class="border-t border-base-300">
+    <div class="mx-auto max-w-7xl px-4 py-6">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+        <div
+          class="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm text-base-content/60"
+        >
+          {
+            footerLinks.legal.map((link) => (
+              <a href={link.href} class="link link-hover">
+                {link.label}
+              </a>
+            ))
+          }
+        </div>
+        <div class="flex items-center gap-2 text-sm text-base-content/60">
+          <span>&copy; {year} Vedify. All rights reserved.</span>
+          <span class="text-base-content/30">&bull;</span>
+          <span class="flex items-center gap-1"
+            >Made with <Icon name="lucide:heart" class="h-3 w-3 text-error fill-error" /> for quality
+            content</span
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="h-safe-bottom md:hidden"></div>
+</footer>

@@ -1,0 +1,129 @@
+---
+import { Icon } from 'astro-icon/components';
+import Card from '@/components/molecules/Card.astro';
+import PlayButton from '@/components/atoms/PlayButton.astro';
+
+interface TranscriptLine {
+  time: string;
+  speaker: string;
+  text: string;
+}
+
+interface Props {
+  src: string;
+  poster?: string;
+  title?: string;
+  duration?: string;
+  type?: 'audio' | 'video';
+  transcript?: TranscriptLine[];
+}
+
+const { src, poster, title, duration, type = 'video', transcript = [] } = Astro.props;
+---
+
+<div class="card bg-base-100 border border-base-300 overflow-hidden media-player" data-type={type}>
+  {
+    type === 'video' ? (
+      <figure class="relative aspect-video bg-base-300">
+        <video
+          id="media-element"
+          class="w-full h-full object-cover"
+          poster={poster}
+          controls
+          preload="metadata"
+          src={src}
+        />
+        <button
+          id="media-play-overlay"
+          class="absolute inset-0 flex items-center justify-center bg-base-300/40 backdrop-blur-sm transition-opacity"
+        >
+          <PlayButton size="lg" />
+        </button>
+      </figure>
+    ) : (
+      <div class="bg-gradient-to-br from-primary/10 to-secondary/10 p-6">
+        <div class="flex items-center gap-4">
+          <button id="audio-play-btn" class="btn btn-circle btn-primary">
+            <Icon name="lucide:play" class="h-6 w-6" />
+          </button>
+          <div class="flex-1">
+            {title && <h3 class="font-semibold">{title}</h3>}
+            <audio id="media-element" src={src} preload="metadata" class="hidden" />
+            <div class="mt-2">
+              <div class="h-1.5 bg-base-300 rounded-full overflow-hidden">
+                <div id="audio-progress" class="h-full bg-primary w-0 transition-[width]" />
+              </div>
+              <div class="flex items-center justify-between text-xs text-base-content/60 mt-1">
+                <span id="audio-current">0:00</span>
+                <span>{duration}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  {
+    transcript.length > 0 && (
+      <div class="card-body p-4 border-t border-base-300">
+        <details class="collapse collapse-arrow bg-base-200/50 rounded-lg">
+          <summary class="collapse-title font-medium flex items-center gap-2">
+            <Icon name="lucide:file-text" class="h-4 w-4" />
+            Transcript
+          </summary>
+          <div class="collapse-content">
+            <div class="space-y-3 max-h-80 overflow-y-auto">
+              {transcript.map((line) => (
+                <div class="flex gap-3 text-sm">
+                  <span class="text-xs font-mono text-base-content/50 shrink-0 w-12">
+                    {line.time}
+                  </span>
+                  <p>
+                    <strong>{line.speaker}:</strong> {line.text}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </details>
+      </div>
+    )
+  }
+</div>
+
+<script>
+  const player = document.querySelector('.media-player');
+  if (player) {
+    const media = player.querySelector('#media-element') as HTMLMediaElement | null;
+    const overlay = player.querySelector('#media-play-overlay');
+    const audioBtn = player.querySelector('#audio-play-btn');
+    const progress = player.querySelector('#audio-progress') as HTMLElement | null;
+    const current = player.querySelector('#audio-current');
+    const fmt = (s: number) =>
+      `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+    const toggle = () => {
+      if (!media) return;
+      if (media.paused) media.play();
+      else media.pause();
+    };
+    overlay?.addEventListener('click', () => {
+      toggle();
+      overlay.classList.add('opacity-0', 'pointer-events-none');
+    });
+    audioBtn?.addEventListener('click', () => {
+      toggle();
+      audioBtn.innerHTML = media?.paused
+        ? '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>'
+        : '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>';
+    });
+    media?.addEventListener('timeupdate', () => {
+      if (progress && media.duration)
+        progress.style.width = `${(media.currentTime / media.duration) * 100}%`;
+      if (current) current.textContent = fmt(media.currentTime);
+    });
+    media?.addEventListener('ended', () => {
+      overlay?.classList.remove('opacity-0', 'pointer-events-none');
+    });
+  }
+</script>

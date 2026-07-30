@@ -1,0 +1,150 @@
+---
+import { Icon } from 'astro-icon/components';
+import type { BaseFrontmatter } from '@vedify/schema';
+import ContentLayout from '@/layouts/ContentLayout.astro';
+import EventMeta from '@/components/organisms/EventMeta.astro';
+import InteractionGroup from '@/components/molecules/InteractionGroup.astro';
+import CommentSection from '@/components/molecules/CommentSection.astro';
+import TagList from '@/components/molecules/TagList.astro';
+import AdSlot from '@/components/molecules/AdSlot.astro';
+
+type Props = BaseFrontmatter & { eventType?: string };
+const content = Astro.props as Props;
+const eventType = content.eventType ?? 'Conference';
+
+const event = {
+  date: 'Oct 14-16, 2026',
+  time: '09:00 AM',
+  location: 'Berlin, Germany',
+  venue: 'CityCube Berlin',
+  duration: '3 days',
+  price: 'From €499',
+  capacity: '2,500 attendees',
+};
+const tracks = [
+  'Distributed Systems',
+  'Edge Computing',
+  'Data Engineering',
+  'AI Infra',
+  'Security',
+];
+const speakers = [
+  {
+    name: 'Dr. Lena Hoffmann',
+    role: 'Researcher, TU Munich',
+    avatar:
+      'https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop',
+  },
+  {
+    name: 'Marcus Chen',
+    role: 'Principal Engineer',
+    avatar:
+      'https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop',
+  },
+  {
+    name: 'Reza Mahmoud',
+    role: 'Field CTO, EdgeCorp',
+    avatar:
+      'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop',
+  },
+  {
+    name: 'Aisha Karim',
+    role: 'Author & Educator',
+    avatar:
+      'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop',
+  },
+];
+---
+
+<ContentLayout
+  frontmatter={content}
+  title={content.title}
+  description={content.description}
+  breadcrumbs={[
+    { label: 'Home', href: '/' },
+    { label: 'Conferences', href: '/conference' },
+    { label: content.title },
+  ]}
+  currentSection={eventType}
+>
+  <div class="max-w-7xl mx-auto px-4 py-8 lg:py-12">
+    <div class="grid lg:grid-cols-[1fr_320px] gap-8">
+      <div class="min-w-0">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="badge badge-primary gap-1"
+            ><Icon name="lucide:calendar" class="h-3.5 w-3.5" /> {eventType}</span
+          >
+          <span class="badge badge-success">Tickets Available</span>
+        </div>
+        <h1 class="text-3xl md:text-5xl font-bold tracking-tight mb-3">{content.title}</h1>
+        <p class="text-lg text-base-content/60 mb-6">{content.description}</p>
+        <figure class="rounded-2xl overflow-hidden mb-8 aspect-[2/1]">
+          <img
+            src="https://images.pexels.com/photos/2774556/pexels-photo-2774556.jpeg?auto=compress&cs=tinysrgb&w=1400&h=700&fit=crop"
+            alt="Conference venue"
+            class="w-full h-full object-cover"
+          />
+        </figure>
+        <div class="card bg-base-100 border border-base-300 mb-8">
+          <div class="card-body">
+            <h2 class="card-title">Tracks</h2>
+            <div class="flex flex-wrap gap-2 mt-2">
+              {tracks.map((track) => <span class="badge badge-lg badge-outline">{track}</span>)}
+            </div>
+          </div>
+        </div>
+        <div class="card bg-base-100 border border-base-300 mb-8">
+          <div class="card-body">
+            <h2 class="card-title flex items-center gap-2">
+              <Icon name="lucide:users" class="h-5 w-5" /> Featured Speakers
+            </h2>
+            <div class="grid sm:grid-cols-2 gap-4 mt-2">
+              {
+                speakers.map((s) => (
+                  <div class="flex items-center gap-3">
+                    <div class="avatar">
+                      <div class="w-12 rounded-full">
+                        <img src={s.avatar} alt={s.name} loading="lazy" />
+                      </div>
+                    </div>
+                    <div>
+                      <>
+                        <p class="font-medium">{s.name}</p>
+                        <p class="text-sm text-base-content/60">{s.role}</p>
+                      </>
+                    </div>
+                  </div>
+                ))
+              }
+            </div>
+          </div>
+        </div>
+        <div class="prose-vedify"><slot /></div>
+        <div class="mt-8"><TagList tags={content.tags} /></div>
+        <div class="my-8"><InteractionGroup /></div>
+        <div class="my-8"><AdSlot variant="banner" /></div>
+        <div class="mt-12"><CommentSection /></div>
+      </div>
+      <aside class="space-y-6 lg:sticky lg:top-24 lg:self-start">
+        <div class="card bg-base-100 border border-base-300">
+          <div class="card-body">
+            <div class="flex items-baseline gap-2 mb-2">
+              <span class="text-2xl font-bold">€499</span><span
+                class="text-base-content/40 line-through">€699</span
+              >
+            </div>
+            <p class="text-xs text-base-content/60 mb-3">Early bird — ends Aug 1</p>
+            <button class="btn btn-primary w-full mb-2 gap-2"
+              ><Icon name="lucide:ticket" class="h-4 w-4" /> Buy Tickets</button
+            >
+            <a href="#" class="btn btn-outline w-full gap-2"
+              ><Icon name="lucide:calendar-plus" class="h-4 w-4" /> Add to Calendar</a
+            >
+          </div>
+        </div>
+        <EventMeta event={event} type={eventType} />
+        <AdSlot variant="sidebar" />
+      </aside>
+    </div>
+  </div>
+</ContentLayout>

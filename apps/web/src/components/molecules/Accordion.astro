@@ -1,0 +1,36 @@
+---
+import Icon from '@/components/atoms/Icon.astro';
+
+interface FaqItem {
+  question: string;
+  answer: string;
+}
+
+interface Props {
+  faqs: FaqItem[];
+  title?: string;
+  name?: string;
+}
+
+const { faqs, title = 'Frequently Asked Questions', name = 'faq-accordion' } = Astro.props;
+---
+
+<section class="space-y-4">
+  <h2 class="text-2xl font-bold flex items-center gap-2">
+    <Icon name="lucide:help-circle" size="md" />
+    {title}
+  </h2>
+  <div class="join-vertical w-full">
+    {
+      faqs.map((faq, i) => (
+        <div class="collapse collapse-arrow join-item border border-base-300 bg-base-100">
+          <input type="radio" name={name} checked={i === 0} />
+          <div class="collapse-title font-medium">{faq.question}</div>
+          <div class="collapse-content">
+            <p class="text-base-content/70 leading-relaxed">{faq.answer}</p>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+</section>

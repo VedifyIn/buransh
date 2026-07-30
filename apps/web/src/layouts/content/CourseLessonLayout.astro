@@ -1,0 +1,91 @@
+---
+import { Icon } from 'astro-icon/components';
+import type { BaseFrontmatter } from '@vedify/schema';
+import ContentLayout from '@/layouts/ContentLayout.astro';
+import CommentSection from '@/components/molecules/CommentSection.astro';
+import InteractionGroup from '@/components/molecules/InteractionGroup.astro';
+
+type Props = BaseFrontmatter & { module?: string; duration?: string };
+const content = Astro.props as Props;
+
+const lesson = {
+  title: content.title,
+  module: content.module ?? '2. Replication & Consensus',
+  duration: content.duration ?? '38:50',
+  prev: { title: 'Leader election', href: '#' },
+  next: { title: 'Paxos vs Raft', href: '#' },
+};
+---
+
+<ContentLayout
+  frontmatter={content}
+  title={lesson.title}
+  description={content.description}
+  breadcrumbs={[
+    { label: 'Home', href: '/' },
+    { label: 'Courses', href: '/course' },
+    { label: lesson.title },
+  ]}
+  currentSection={lesson.title}
+>
+  <div class="max-w-5xl mx-auto px-4 py-8">
+    <div class="mb-4 text-sm text-base-content/60">{lesson.module}</div>
+    <h1 class="text-2xl md:text-3xl font-bold tracking-tight mb-3">{lesson.title}</h1>
+    <div class="flex items-center gap-4 text-sm text-base-content/60 mb-6">
+      <span class="flex items-center gap-1"
+        ><Icon name="lucide:clock" class="h-3.5 w-3.5" /> {lesson.duration}</span
+      >
+      <span class="flex items-center gap-1"
+        ><Icon name="lucide:eye" class="h-3.5 w-3.5" /> 4,201 views</span
+      >
+    </div>
+    <div class="card bg-base-100 border border-base-300 overflow-hidden">
+      <figure class="relative aspect-video bg-base-300">
+        <img
+          src="https://images.pexels.com/photos/1181271/pexels-photo-1181271.jpeg?auto=compress&cs=tinysrgb&w=1200&h=600&fit=crop"
+          alt="Lesson preview"
+          class="w-full h-full object-cover"
+        />
+        <button
+          class="absolute inset-0 flex items-center justify-center bg-base-300/30 hover:bg-base-300/40 transition-colors group"
+        >
+          <span class="btn btn-circle btn-primary btn-lg group-hover:scale-110 transition-transform"
+            ><Icon name="lucide:play" class="h-8 w-8" /></span
+          >
+        </button>
+      </figure>
+      <div class="card-body p-4">
+        <div class="flex items-center justify-between flex-wrap gap-2">
+          <div class="flex gap-2">
+            <button class="btn btn-ghost btn-sm gap-1"
+              ><Icon name="lucide:bookmark" class="h-4 w-4" /> Save</button
+            >
+            <button class="btn btn-ghost btn-sm gap-1"
+              ><Icon name="lucide:download" class="h-4 w-4" /> Notes</button
+            >
+            <button class="btn btn-ghost btn-sm gap-1"
+              ><Icon name="lucide:share-2" class="h-4 w-4" /> Share</button
+            >
+          </div>
+          <select class="select select-bordered select-sm"
+            ><option>1x</option><option>1.25x</option><option>1.5x</option><option>2x</option
+            ></select
+          >
+        </div>
+        <progress class="progress progress-primary w-full mt-2" value="35" max="100"></progress>
+      </div>
+    </div>
+    <div class="prose-vedify mt-8 max-w-3xl"><slot /></div>
+    <div class="mt-8 flex items-center justify-between gap-4">
+      <a href={lesson.prev.href} class="btn btn-outline gap-2"
+        ><Icon name="lucide:arrow-left" class="h-4 w-4" /> Previous</a
+      >
+      <span class="text-sm text-base-content/60">3 of 87</span>
+      <a href={lesson.next.href} class="btn btn-primary gap-2"
+        >Next <Icon name="lucide:arrow-right" class="h-4 w-4" /></a
+      >
+    </div>
+    <div class="my-8"><InteractionGroup /></div>
+    <div class="mt-8"><CommentSection /></div>
+  </div>
+</ContentLayout>

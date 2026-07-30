@@ -57,6 +57,58 @@ partytown:
     - dataLayer.push
 
 # -----------------------------------------------------------------------------
+# Search — Pagefind configuration
+#
+# Tags listed here are used as suggestions in the search filter UI.
+# They can also be injected via env variables at build time:
+#   PUBLIC_SEARCH_TAGS=tag1,tag2,tag3
+# Pagefind auto-discovers all tags from content regardless.
+# -----------------------------------------------------------------------------
+search:
+  suggestedTags:
+    - Getting Started
+    - Guide
+    - Reference
+    - API
+    - Tutorial
+    - Deep Dive
+    - Case Study
+    - Comparison
+    - Best Practice
+    - Performance
+
+# -----------------------------------------------------------------------------
+# Analytics & Consent
+#
+# Central configuration for analytics services. All are consent-gated:
+# scripts only load after the user accepts via the cookie consent banner.
+# Set `required: false` to skip the banner entirely.
+#
+# --- Google Tag Manager ---
+#   tagId: GTM-XXXXXX (container ID)
+#
+# --- Vercel ---
+#   analytics: true  → loads Vercel Web Analytics
+#   speedInsights: true → loads Vercel Speed Insights (Core Web Vitals RUM)
+#
+# --- Cloudflare ---
+#   token: beacon token from Cloudflare Web Analytics dashboard
+# -----------------------------------------------------------------------------
+analytics:
+  consent:
+    required: true
+  google:
+    enabled: false
+    tagId: ''
+  vercel:
+    enabled: false
+    analytics: false
+    speedInsights: false
+  cloudflare:
+    enabled: false
+    token: ''
+
+# -----------------------------------------------------------------------------
 # Markdown / Shiki syntax highlighting themes
 # -----------------------------------------------------------------------------
 markdown:
@@ -64,6 +116,28 @@ markdown:
     themes:
       light: github-light
       dark: github-dark
+
+# -----------------------------------------------------------------------------
+# Organization — used for JSON-LD structured data (Organization schema)
+# -----------------------------------------------------------------------------
+organization:
+  name: Vedify
+  url: https://buransh.labs.vedify.in
+  logo: /favicon.svg
+  description: A SEO native Astro Theme powering quality content for curious minds.
+  sameAs:
+    - https://github.com/anomalyco/buransh
+
+# -----------------------------------------------------------------------------
+# DaisyUI Theme
+#
+# `default` is the theme loaded by default (light). `prefersdark` is loaded
+# when the user's OS prefers dark color scheme. Theme names must match
+# built-in DaisyUI themes or custom themes defined in global.css.
+# -----------------------------------------------------------------------------
+theme:
+  default: vedify
+  prefersdark: vedify-dark
 
 # -----------------------------------------------------------------------------
 # Fonts

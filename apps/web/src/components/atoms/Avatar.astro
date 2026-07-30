@@ -1,0 +1,35 @@
+---
+import { Icon } from 'astro-icon/components';
+
+interface Props {
+  src: string;
+  alt: string;
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  ring?: 'none' | 'primary' | 'accent' | 'success';
+  online?: boolean;
+  loading?: 'lazy' | 'eager';
+}
+
+const { src, alt, size = 'md', ring = 'none', online = false, loading = 'lazy' } = Astro.props;
+
+const sizes: Record<string, string> = {
+  xs: 'w-8',
+  sm: 'w-10',
+  md: 'w-12',
+  lg: 'w-16',
+  xl: 'w-20',
+};
+
+const rings: Record<string, string> = {
+  none: '',
+  primary: 'ring ring-primary ring-offset-2 ring-offset-base-100',
+  accent: 'ring ring-accent ring-offset-2 ring-offset-base-100',
+  success: 'ring ring-success ring-offset-2 ring-offset-base-100',
+};
+---
+
+<div class={`avatar ${online ? 'avatar-online' : ''}`}>
+  <div class={`${sizes[size]} rounded-full ${rings[ring]}`}>
+    <img src={src} alt={alt} {loading} class="object-cover" />
+  </div>
+</div>

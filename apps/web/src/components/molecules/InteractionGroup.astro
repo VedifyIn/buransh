@@ -1,0 +1,62 @@
+---
+import Icon from '@/components/atoms/Icon.astro';
+
+interface Reaction {
+  icon: string;
+  label: string;
+  count: number;
+  active?: boolean;
+}
+
+interface Props {
+  reactions?: Reaction[];
+}
+
+const defaultReactions: Reaction[] = [
+  { icon: 'thumbs-up', label: 'Helpful', count: 248, active: true },
+  { icon: 'lightbulb', label: 'Insightful', count: 92 },
+  { icon: 'heart', label: 'Loved', count: 64 },
+  { icon: 'bookmark', label: 'Save', count: 0 },
+];
+
+const { reactions = defaultReactions } = Astro.props;
+---
+
+<div class="flex flex-wrap items-center gap-2 reaction-bar">
+  {
+    reactions.map((reaction, i) => (
+      <button
+        class={`btn btn-sm gap-2 reaction-btn ${reaction.active ? 'btn-primary' : 'btn-outline'}`}
+        data-index={i}
+      >
+        <Icon name={`lucide:${reaction.icon}`} size="sm" />
+        <span>{reaction.label}</span>
+        {reaction.count > 0 && (
+          <span class="badge badge-xs badge-ghost reaction-count">{reaction.count}</span>
+        )}
+      </button>
+    ))
+  }
+  <button class="btn btn-sm btn-ghost gap-2">
+    <Icon name="lucide:share-2" size="sm" />
+    <span>Share</span>
+  </button>
+</div>
+
+<script>
+  document.querySelectorAll('.reaction-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const countEl = btn.querySelector('.reaction-count');
+      const isOutline = btn.classList.contains('btn-outline');
+      if (isOutline) {
+        btn.classList.remove('btn-outline');
+        btn.classList.add('btn-primary');
+        if (countEl) countEl.textContent = String(parseInt(countEl.textContent || '0') + 1);
+      } else {
+        btn.classList.remove('btn-primary');
+        btn.classList.add('btn-outline');
+        if (countEl) countEl.textContent = String(parseInt(countEl.textContent || '0') - 1);
+      }
+    });
+  });
+</script>

@@ -1,0 +1,82 @@
+---
+import { Icon } from 'astro-icon/components';
+import Card from '@/components/molecules/Card.astro';
+import SectionHeader from '@/components/molecules/SectionHeader.astro';
+
+interface Lesson {
+  title: string;
+  duration: string;
+  free?: boolean;
+  completed?: boolean;
+  current?: boolean;
+}
+
+interface Module {
+  title: string;
+  lessons: Lesson[];
+}
+
+interface Props {
+  modules: Module[];
+  progress?: number;
+}
+
+const { modules, progress = 0 } = Astro.props;
+const totalLessons = modules.reduce((acc, m) => acc + m.lessons.length, 0);
+---
+
+<Card padding="md">
+  <div class="flex items-center justify-between mb-3">
+    <SectionHeader title="Curriculum" icon="graduation-cap" />
+    <span class="text-sm text-base-content/60">{totalLessons} lessons</span>
+  </div>
+  {
+    progress > 0 && (
+      <div class="mb-4">
+        <div class="flex items-center justify-between text-xs mb-1">
+          <span class="text-base-content/60">Progress</span>
+          <span class="font-semibold">{progress}%</span>
+        </div>
+        <progress class="progress progress-primary w-full" value={progress} max="100" />
+      </div>
+    )
+  }
+  <div class="join-vertical w-full">
+    {
+      modules.map((module, mi) => (
+        <div class="collapse collapse-arrow join-item border border-base-300">
+          <input type="checkbox" checked={mi === 0} />
+          <div class="collapse-title font-medium flex items-center justify-between">
+            <span>{module.title}</span>
+            <span class="badge badge-ghost badge-sm">{module.lessons.length}</span>
+          </div>
+          <div class="collapse-content">
+            <ul class="space-y-1">
+              {module.lessons.map((lesson) => (
+                <li>
+                  <a
+                    href="#"
+                    class={`flex items-center gap-3 p-2 rounded-lg hover:bg-base-200 transition-colors ${lesson.current ? 'bg-primary/10 text-primary' : ''}`}
+                  >
+                    <span class="shrink-0">
+                      {lesson.completed ? (
+                        <Icon name="lucide:check-circle-2" class="h-4 w-4 text-success" />
+                      ) : lesson.current ? (
+                        <Icon name="lucide:play-circle" class="h-4 w-4 text-primary" />
+                      ) : (
+                        <Icon name="lucide:circle" class="h-4 w-4 text-base-content/40" />
+                      )}
+                    </span>
+                    <span class="flex-1 text-sm">{lesson.title}</span>
+                    <span class="text-xs text-base-content/50">{lesson.duration}</span>
+                    {lesson.free && <span class="badge badge-success badge-xs">Free</span>}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+</Card>

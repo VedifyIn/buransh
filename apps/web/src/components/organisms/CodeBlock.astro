@@ -1,0 +1,67 @@
+---
+import { Icon } from 'astro-icon/components';
+import Card from '@/components/molecules/Card.astro';
+
+interface Props {
+  code: string;
+  lang?: string;
+  filename?: string;
+  showLineNumbers?: boolean;
+}
+
+const { code, lang = 'bash', filename, showLineNumbers = true } = Astro.props;
+const lines = code.split('\n');
+const rendered = showLineNumbers
+  ? lines
+      .map(
+        (line, i) =>
+          `<span class="text-base-content/30 select-none inline-block w-8 text-right pr-3">${i + 1}</span>${line}`,
+      )
+      .join('\n')
+  : code;
+---
+
+<div class="card bg-base-300/40 border border-base-300 overflow-hidden group">
+  <div class="flex items-center justify-between px-4 py-2 border-b border-base-300 bg-base-200/50">
+    <div class="flex items-center gap-2">
+      <div class="flex gap-1.5">
+        <span class="h-3 w-3 rounded-full bg-error/70"></span>
+        <span class="h-3 w-3 rounded-full bg-warning/70"></span>
+        <span class="h-3 w-3 rounded-full bg-success/70"></span>
+      </div>
+      {filename && <span class="text-xs text-base-content/60 ml-2 font-mono">{filename}</span>}
+      {
+        !filename && (
+          <span class="text-xs text-base-content/60 ml-2 font-mono uppercase">{lang}</span>
+        )
+      }
+    </div>
+    <button class="btn btn-ghost btn-xs gap-1 copy-btn" data-code={code}>
+      <Icon name="lucide:copy" class="h-3.5 w-3.5" />
+      <span class="copy-label">Copy</span>
+    </button>
+  </div>
+  <div class="p-4 overflow-x-auto">
+    <pre
+      class="text-sm font-mono leading-relaxed"><code class={`lang-${lang}`} set:html={rendered} /></pre>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll('.copy-btn').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const code = (btn as HTMLElement).dataset.code || '';
+      try {
+        await navigator.clipboard.writeText(code);
+        const label = btn.querySelector('.copy-label');
+        if (label) {
+          const original = label.textContent;
+          label.textContent = 'Copied!';
+          setTimeout(() => {
+            label.textContent = original;
+          }, 1500);
+        }
+      } catch {}
+    });
+  });
+</script>

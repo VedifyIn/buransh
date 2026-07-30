@@ -34,6 +34,29 @@ interface SiteConfig {
     forward: string[];
   };
 
+  search: {
+    suggestedTags: string[];
+  };
+
+  analytics: {
+    consent: {
+      required: boolean;
+    };
+    google: {
+      enabled: boolean;
+      tagId: string;
+    };
+    vercel: {
+      enabled: boolean;
+      analytics: boolean;
+      speedInsights: boolean;
+    };
+    cloudflare: {
+      enabled: boolean;
+      token: string;
+    };
+  };
+
   markdown: {
     shikiConfig: {
       themes: {

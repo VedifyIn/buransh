@@ -1,0 +1,109 @@
+---
+import { Icon } from 'astro-icon/components';
+import { bookSchema } from '@vedify/schema';
+import type { z } from '@vedify/schema';
+import ContentLayout from '@/layouts/ContentLayout.astro';
+import BookMeta from '@/components/organisms/BookMeta.astro';
+import RatingStars from '@/components/atoms/RatingStars.astro';
+import AuthorCard from '@/components/organisms/AuthorCard.astro';
+import TagList from '@/components/molecules/TagList.astro';
+import InteractionGroup from '@/components/molecules/InteractionGroup.astro';
+import CommentSection from '@/components/molecules/CommentSection.astro';
+import AdSlot from '@/components/molecules/AdSlot.astro';
+import TableOfContents from '@/components/molecules/TableOfContents.astro';
+
+type Props = z.infer<typeof bookSchema>;
+const content = Astro.props as Props;
+
+const book = {
+  title: content.book?.title ?? content.title,
+  author: content.book?.author ?? content.author,
+  pages: content.book?.pages ?? 0,
+  publisher: content.book?.publisher ?? '',
+  published: content.book?.publicationDate ?? '',
+  language: 'English',
+  isbn: content.book?.isbn ?? '',
+  format: 'Paperback',
+};
+const toc = [
+  { id: 'chapter-1', title: 'Foundations of Data Systems', level: 2 },
+  { id: 'chapter-2', title: 'Data Models & Query Languages', level: 2 },
+  { id: 'chapter-3', title: 'Storage & Retrieval', level: 2 },
+  { id: 'chapter-4', title: 'Encoding & Evolution', level: 2 },
+  { id: 'chapter-5', title: 'Replication', level: 2 },
+  { id: 'chapter-6', title: 'Partitioning', level: 2 },
+  { id: 'chapter-7', title: 'Transactions', level: 2 },
+  { id: 'chapter-8', title: 'The Trouble with Distributed Systems', level: 2 },
+  { id: 'chapter-9', title: 'Consistency & Consensus', level: 2 },
+  { id: 'chapter-10', title: 'Batch Processing', level: 2 },
+  { id: 'chapter-11', title: 'Stream Processing', level: 2 },
+  { id: 'chapter-12', title: 'The Future of Data Systems', level: 2 },
+];
+---
+
+<ContentLayout
+  frontmatter={content}
+  title={book.title}
+  description={content.description}
+  breadcrumbs={[
+    { label: 'Home', href: '/' },
+    { label: 'Books', href: '/book' },
+    { label: book.title },
+  ]}
+  currentSection={book.title}
+>
+  <div class="max-w-7xl mx-auto px-4 py-8 lg:py-12">
+    <div class="grid lg:grid-cols-[300px_1fr_280px] gap-8">
+      <aside class="space-y-6">
+        <div class="card bg-base-100 border border-base-300">
+          <figure class="aspect-[2/3] bg-base-200">
+            <img
+              src="https://images.pexels.com/photos/1130980/pexels-photo-1130980.jpeg?auto=compress&cs=tinysrgb&w=400&h=600&fit=crop"
+              alt={book.title}
+              class="w-full h-full object-cover"
+            />
+          </figure>
+          <div class="card-body p-4">
+            <a href="#" class="btn btn-primary w-full gap-2"
+              ><Icon name="lucide:book-open" class="h-4 w-4" /> Read Sample</a
+            >
+            <a href="#" class="btn btn-outline w-full gap-2"
+              ><Icon name="lucide:shopping-cart" class="h-4 w-4" /> Buy $54.99</a
+            >
+          </div>
+        </div>
+        <BookMeta book={book} />
+      </aside>
+
+      <div class="min-w-0">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="badge badge-primary">Book</span>
+          <span class="badge badge-ghost">Non-fiction</span>
+        </div>
+        <h1 class="text-3xl md:text-4xl font-bold tracking-tight mb-2">{book.title}</h1>
+        <p class="text-lg text-base-content/60 mb-4">by {book.author}</p>
+        <div class="flex items-center gap-4 mb-6">
+          <RatingStars rating={content.rating?.value ?? 4.8} count={3214} />
+        </div>
+        <div class="prose-vedify"><slot /></div>
+        <div class="mt-8"><TagList tags={content.tags} /></div>
+        <div class="my-8"><InteractionGroup /></div>
+        <div class="my-8"><AdSlot variant="banner" /></div>
+        <div class="mt-12"><CommentSection /></div>
+      </div>
+
+      <aside class="hidden lg:block">
+        <div class="sticky top-24 space-y-6">
+          <TableOfContents items={toc} title="Chapters" />
+          <AuthorCard
+            name={book.author}
+            role="Researcher, University of Cambridge"
+            bio="Distributed systems researcher with a gift for explaining complex ideas simply."
+            avatar="https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop"
+          />
+          <AdSlot variant="sidebar" />
+        </div>
+      </aside>
+    </div>
+  </div>
+</ContentLayout>

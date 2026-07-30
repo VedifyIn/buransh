@@ -1,0 +1,52 @@
+---
+import { Icon } from 'astro-icon/components';
+import Card from '@/components/molecules/Card.astro';
+
+interface Step {
+  title: string;
+  description: string;
+  duration?: string;
+  tip?: string;
+  code?: string;
+  lang?: string;
+}
+
+interface Props {
+  steps: Step[];
+  title?: string;
+}
+
+const { steps, title = 'Step by Step' } = Astro.props;
+---
+
+<section class="space-y-6">
+  <h2 class="text-2xl font-bold flex items-center gap-2">
+    <Icon name="lucide:list-checks" class="h-6 w-6" />
+    {title}
+  </h2>
+  <ul class="steps steps-vertical w-full">
+    {
+      steps.map((step, i) => (
+        <li class="step step-primary" data-step={i}>
+          <div class="text-left w-full max-w-3xl pb-4">
+            <div class="flex items-center justify-between gap-3 mb-2">
+              <h3 class="font-semibold text-lg">{step.title}</h3>
+              {step.duration && (
+                <span class="badge badge-ghost gap-1">
+                  <Icon name="lucide:timer" class="h-3 w-3" /> {step.duration}
+                </span>
+              )}
+            </div>
+            <p class="text-base-content/80 leading-relaxed">{step.description}</p>
+            {step.tip && (
+              <div class="alert alert-info bg-info/10 border-info/30 mt-3 py-2">
+                <Icon name="lucide:info" class="h-4 w-4" />
+                <span class="text-sm">{step.tip}</span>
+              </div>
+            )}
+          </div>
+        </li>
+      ))
+    }
+  </ul>
+</section>

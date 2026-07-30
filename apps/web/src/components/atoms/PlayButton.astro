@@ -1,0 +1,32 @@
+---
+import { Icon } from 'astro-icon/components';
+
+interface Props {
+  size?: 'sm' | 'md' | 'lg' | 'xl';
+  playing?: boolean;
+  class?: string;
+}
+
+const { size = 'lg', playing = false, class: className = '' } = Astro.props;
+
+const sizes: Record<string, string> = {
+  sm: 'btn-sm btn-circle',
+  md: 'btn-md btn-circle',
+  lg: 'btn-lg btn-circle',
+  xl: 'btn-xl btn-circle',
+};
+
+const iconSizes: Record<string, string> = {
+  sm: 'h-4 w-4',
+  md: 'h-5 w-5',
+  lg: 'h-8 w-8',
+  xl: 'h-10 w-10',
+};
+---
+
+<button
+  class={`btn btn-primary ${sizes[size]} ${className}`}
+  aria-label={playing ? 'Pause' : 'Play'}
+>
+  <Icon name={playing ? 'lucide:pause' : 'lucide:play'} class={iconSizes[size]} />
+</button>

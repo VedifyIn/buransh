@@ -1,0 +1,59 @@
+---
+import { Icon } from 'astro-icon/components';
+
+interface Props {
+  variant?:
+    | 'primary'
+    | 'secondary'
+    | 'accent'
+    | 'ghost'
+    | 'outline'
+    | 'success'
+    | 'warning'
+    | 'error'
+    | 'info';
+  size?: 'xs' | 'sm' | 'md' | 'lg';
+  href?: string;
+  icon?: string;
+  iconRight?: string;
+}
+
+const { variant = 'ghost', size = 'md', href, icon, iconRight } = Astro.props;
+
+const sizes: Record<string, string> = {
+  xs: 'badge-xs',
+  sm: 'badge-sm',
+  md: 'badge-md',
+  lg: 'badge-lg',
+};
+
+const variants: Record<string, string> = {
+  primary: 'badge-primary',
+  secondary: 'badge-secondary',
+  accent: 'badge-accent',
+  ghost: 'badge-ghost',
+  outline: 'badge-outline',
+  success: 'badge-success',
+  warning: 'badge-warning',
+  error: 'badge-error',
+  info: 'badge-info',
+};
+
+const cls = `badge ${sizes[size]} ${variants[variant]} gap-1`;
+---
+
+{
+  href ? (
+    <a href={href} class={cls}>
+      {icon && <Icon name={`lucide:${icon}`} class="h-3 w-3" />}
+      <slot />
+      {iconRight && <Icon name={`lucide:${iconRight}`} class="h-3 w-3" />}
+    </a>
+  ) : (
+    <span class={cls}>
+      {icon && <Icon name={`lucide:${icon}`} class="h-3 w-3" />}
+      <slot />
+      {iconRight && <Icon name={`lucide:${iconRight}`} class="h-3 w-3" />}
+    </span>
+  )
+}

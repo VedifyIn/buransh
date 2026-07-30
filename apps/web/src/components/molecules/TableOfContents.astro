@@ -1,0 +1,71 @@
+---
+import Icon from '@/components/atoms/Icon.astro';
+import Card from '@/components/molecules/Card.astro';
+import SectionHeader from '@/components/molecules/SectionHeader.astro';
+
+interface TocItem {
+  id: string;
+  title: string;
+  level?: number;
+}
+
+interface Props {
+  items: TocItem[];
+  title?: string;
+}
+
+const { items, title = 'Table of Contents' } = Astro.props;
+---
+
+<Card padding="md" class="sticky-toc">
+  <SectionHeader title={title} icon="list" />
+  <nav class="space-y-1 max-h-[60vh] overflow-y-auto hide-scrollbar">
+    {
+      items.map((item) => (
+        <a
+          href={`#${item.id}`}
+          class={`block text-sm py-1.5 px-2 rounded-lg hover:bg-base-200 transition-colors toc-link ${item.level === 3 ? 'pl-5 text-base-content/60' : ''}`}
+          data-toc-target={item.id}
+        >
+          {item.title}
+        </a>
+      ))
+    }
+  </nav>
+</Card>
+
+<style>
+  .sticky-toc {
+    position: sticky;
+    top: 6rem;
+    align-self: start;
+    max-height: calc(100vh - 7rem);
+    overflow-y: auto;
+  }
+  .toc-link.toc-active {
+    background-color: hsl(var(--p) / 0.1);
+    color: hsl(var(--p));
+    font-weight: 600;
+  }
+</style>
+
+<script>
+  const links = document.querySelectorAll('.toc-link');
+  const sections = Array.from(links).map((link) => {
+    const id = (link as HTMLElement).dataset.tocTarget;
+    return id ? document.getElementById(id) : null;
+  });
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          links.forEach((l) => l.classList.remove('toc-active'));
+          const active = document.querySelector(`.toc-link[data-toc-target="${entry.target.id}"]`);
+          active?.classList.add('toc-active');
+        }
+      });
+    },
+    { rootMargin: '-20% 0px -75% 0px' },
+  );
+  sections.forEach((s) => s && observer.observe(s));
+</script>

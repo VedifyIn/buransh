@@ -1,0 +1,47 @@
+---
+import { Icon } from 'astro-icon/components';
+
+interface Props {
+  rating: number;
+  count?: number;
+  size?: 'sm' | 'md' | 'lg';
+  showValue?: boolean;
+}
+
+const { rating, count, size = 'md', showValue = true } = Astro.props;
+
+const sizes: Record<string, string> = {
+  sm: 'h-3.5 w-3.5',
+  md: 'h-5 w-5',
+  lg: 'h-7 w-7',
+};
+
+const full = Math.floor(rating);
+const hasHalf = rating - full >= 0.25 && rating - full < 0.75;
+const totalFull = rating - full >= 0.75 ? full + 1 : full;
+---
+
+<div class="flex items-center gap-2">
+  <div class="rating rating-sm">
+    {
+      Array.from({ length: 5 }).map((_, i) => (
+        <Icon
+          name={
+            i < totalFull
+              ? 'lucide:star'
+              : i === full && hasHalf
+                ? 'lucide:star-half'
+                : 'lucide:star'
+          }
+          class={`${sizes[size]} ${i < totalFull || (i === full && hasHalf) ? 'text-warning fill-warning' : 'text-base-300'}`}
+        />
+      ))
+    }
+  </div>
+  {showValue && <span class="font-semibold">{rating.toFixed(1)}</span>}
+  {
+    count !== undefined && (
+      <span class="text-sm text-base-content/60">({count.toLocaleString()})</span>
+    )
+  }
+</div>

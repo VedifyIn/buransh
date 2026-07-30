@@ -1,0 +1,44 @@
+---
+import Icon from '@/components/atoms/Icon.astro';
+
+interface Props {
+  title: string;
+  icon?: string;
+  level?: 2 | 3;
+  action?: string;
+  actionHref?: string;
+  actionIcon?: string;
+  class?: string;
+}
+
+const {
+  title,
+  icon,
+  level = 3,
+  action,
+  actionHref,
+  actionIcon,
+  class: className = '',
+} = Astro.props;
+
+const Tag = level === 2 ? 'h2' : 'h3';
+const iconSize = level === 2 ? 'md' : 'sm';
+const titleClass = level === 2 ? 'text-2xl font-bold' : 'font-semibold';
+const iconClass = level === 2 ? 'h-6 w-6' : 'h-5 w-5';
+---
+
+<div class={`flex items-center justify-between mb-3 ${className}`}>
+  <Tag class={`${titleClass} flex items-center gap-2`}>
+    {icon && <Icon name={`lucide:${icon}`} size={iconSize} />}
+    {title}
+  </Tag>
+  {
+    action && actionHref && (
+      <a href={actionHref} class="btn btn-ghost btn-sm gap-1">
+        {actionIcon && <Icon name={`lucide:${actionIcon}`} size="xs" />}
+        {action}
+      </a>
+    )
+  }
+  {action && !actionHref && <span class="text-sm text-base-content/60">{action}</span>}
+</div>

@@ -1,0 +1,94 @@
+# =============================================================================
+# Author Registry
+# Central author data used across all content types. Each author is keyed by
+# slug, which is the value used in content frontmatter `author:` field.
+#
+# Fields:
+#   name   – display name
+#   slug   – frontmatter reference (kebab-case)
+#   role   – title / position
+#   bio    – short description
+#   avatar – profile photo URL
+#   stats  – optional achievements (label + value)
+# =============================================================================
+
+authors:
+  - slug: marcus-chen
+    name: Marcus Chen
+    role: Principal Engineer
+    bio: Distributed systems engineer focused on event-driven architectures.
+    avatar: https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop
+    stats:
+      - { label: Articles, value: 48 }
+      - { label: Followers, value: '12.4k' }
+      - { label: Reads, value: '2.1M' }
+
+  - slug: sarah-chen
+    name: Sarah Chen
+    role: Senior Frontend Engineer
+    bio: Building delightful, fast interfaces with a focus on developer experience.
+    avatar: https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop
+    stats:
+      - { label: Tutorials, value: 23 }
+      - { label: Followers, value: '8.2k' }
+
+  - slug: vedify-events
+    name: Vedify Events
+    role: Vedify Team
+    bio: Official events team at Vedify, organizing hackathons, conferences, webinars, and workshops.
+    avatar: https://images.pexels.com/photos/3184296/pexels-photo-3184296.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop
+
+  - slug: reza-mahmoud
+    name: Reza Mahmoud
+    role: Field CTO, EdgeCorp
+    bio: Distributed systems veteran focused on edge-native architectures.
+    avatar: https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop
+    stats:
+      - { label: Episodes, value: 14 }
+      - { label: Followers, value: '5.4k' }
+
+  - slug: martin-kleppmann
+    name: Martin Kleppmann
+    role: Researcher, University of Cambridge
+    bio: Distributed systems researcher with a gift for explaining complex ideas simply.
+    avatar: https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop
+
+  - slug: aisha-karim
+    name: Dr. Aisha Karim
+    role: Author & Educator
+    bio: Author of Practical Distributed Systems. 15 years building large-scale infrastructure.
+    avatar: https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop
+    stats:
+      - { label: Students, value: '42k' }
+      - { label: Courses, value: 6 }
+      - { label: Rating, value: '4.9' }
+
+  - slug: alan-kay
+    name: Alan Kay
+    role: Computer Scientist
+    bio: Pioneering computer scientist known for object-oriented programming and windowing GUI design.
+    avatar: https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop
+
+  - slug: lucia-romano
+    name: Chef Lucia Romano
+    role: Italian Cuisine Specialist
+    bio: Trained in Bologna. Believes risotto is a meditation, not a recipe.
+    avatar: https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop
+
+  - slug: priya-patel
+    name: Priya Patel
+    role: Staff Engineer
+    bio: Backend and data infra. Reviews books she wishes she'd read earlier.
+    avatar: https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop
+    stats:
+      - { label: Reviews, value: 32 }
+      - { label: Followers, value: '3.1k' }
+
+  - slug: lena-hoffmann
+    name: Dr. Lena Hoffmann
+    role: Lead Author, TU Munich
+    bio: Distributed systems researcher focused on consistency models.
+    avatar: https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop
+    stats:
+      - { label: Papers, value: 38 }
+      - { label: Citations, value: '4.2k' }

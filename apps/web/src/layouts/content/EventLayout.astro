@@ -1,0 +1,72 @@
+---
+import { Icon } from 'astro-icon/components';
+import type { BaseFrontmatter } from '@vedify/schema';
+import ContentLayout from '@/layouts/ContentLayout.astro';
+import EventMeta from '@/components/organisms/EventMeta.astro';
+import InteractionGroup from '@/components/molecules/InteractionGroup.astro';
+import CommentSection from '@/components/molecules/CommentSection.astro';
+import TagList from '@/components/molecules/TagList.astro';
+import AdSlot from '@/components/molecules/AdSlot.astro';
+
+type Props = BaseFrontmatter & { eventType?: string };
+const content = Astro.props as Props;
+const eventType = content.eventType ?? 'Event';
+
+const event = {
+  date: 'Sep 18-20, 2026',
+  time: '09:00 AM PST',
+  location: 'San Francisco, CA',
+  venue: 'Moscone West Convention Center',
+  duration: '48 hours',
+  price: 'Free',
+  capacity: '500 participants',
+};
+---
+
+<ContentLayout
+  frontmatter={content}
+  title={content.title}
+  description={content.description}
+  breadcrumbs={[
+    { label: 'Home', href: '/' },
+    { label: 'Events', href: '/event' },
+    { label: content.title },
+  ]}
+  currentSection={eventType}
+>
+  <div class="max-w-7xl mx-auto px-4 py-8 lg:py-12">
+    <div class="grid lg:grid-cols-[1fr_320px] gap-8">
+      <div class="min-w-0">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="badge badge-primary gap-1"
+            ><Icon name="lucide:trophy" class="h-3.5 w-3.5" /> {eventType}</span
+          >
+          <span class="badge badge-success">Registration Open</span>
+        </div>
+        <h1 class="text-3xl md:text-5xl font-bold tracking-tight mb-3">{content.title}</h1>
+        <p class="text-lg text-base-content/60 mb-4">{content.description}</p>
+        <div class="prose-vedify"><slot /></div>
+        <div class="mt-8"><TagList tags={content.tags} /></div>
+        <div class="my-8"><InteractionGroup /></div>
+        <div class="my-8"><AdSlot variant="banner" /></div>
+        <div class="mt-12"><CommentSection /></div>
+      </div>
+      <aside class="space-y-6 lg:sticky lg:top-24 lg:self-start">
+        <div class="card bg-base-100 border border-base-300">
+          <div class="card-body">
+            <h3 class="card-title">Register</h3>
+            <p class="text-sm text-base-content/60 mb-3">Free to participate. Teams of 1-4.</p>
+            <button class="btn btn-primary w-full mb-2 gap-2"
+              ><Icon name="lucide:rocket" class="h-4 w-4" /> Register Now</button
+            >
+            <button class="btn btn-outline w-full gap-2"
+              ><Icon name="lucide:users" class="h-4 w-4" /> Find a Team</button
+            >
+          </div>
+        </div>
+        <EventMeta event={event} type={eventType} />
+        <AdSlot variant="sidebar" />
+      </aside>
+    </div>
+  </div>
+</ContentLayout>

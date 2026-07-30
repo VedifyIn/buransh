@@ -1,0 +1,158 @@
+---
+import { Icon } from 'astro-icon/components';
+import { courseSchema } from '@vedify/schema';
+import type { z } from '@vedify/schema';
+import ContentLayout from '@/layouts/ContentLayout.astro';
+import CourseMeta from '@/components/organisms/CourseMeta.astro';
+import CurriculumList from '@/components/organisms/CurriculumList.astro';
+import AuthorCard from '@/components/organisms/AuthorCard.astro';
+import RatingStars from '@/components/atoms/RatingStars.astro';
+import TagList from '@/components/molecules/TagList.astro';
+import InteractionGroup from '@/components/molecules/InteractionGroup.astro';
+import CommentSection from '@/components/molecules/CommentSection.astro';
+import AdSlot from '@/components/molecules/AdSlot.astro';
+import { getAuthor } from '@/utils/get-author';
+
+type Props = z.infer<typeof courseSchema>;
+const content = Astro.props as Props;
+
+const resolvedAuthor = getAuthor(content.author) ?? { name: content.author };
+
+const course = {
+  instructor: resolvedAuthor.name,
+  duration: content.timeRequired ?? '24h 30m',
+  lessons: content.numberOfLessons ?? 87,
+  level: content.difficulty ?? 'Intermediate',
+  language: 'English',
+  certificate: true,
+  lastUpdated: content.dateModified,
+};
+const modules = [
+  {
+    title: '1. Foundations of Distributed Systems',
+    lessons: [
+      { title: 'Why distributed systems?', duration: '12:30', free: true, completed: true },
+      { title: 'CAP theorem explained', duration: '18:45', free: true, completed: true },
+      { title: 'Consistency models', duration: '24:10', completed: true },
+      { title: 'Network partitions', duration: '15:20', completed: true },
+    ],
+  },
+  {
+    title: '2. Replication & Consensus',
+    lessons: [
+      { title: 'Leader election', duration: '22:15', completed: true },
+      { title: 'Raft consensus', duration: '38:50', current: true },
+      { title: 'Paxos vs Raft', duration: '19:30' },
+      { title: 'Quorum reads & writes', duration: '17:40' },
+    ],
+  },
+  {
+    title: '3. Partitioning & Sharding',
+    lessons: [
+      { title: 'Hash vs range partitioning', duration: '14:20' },
+      { title: 'Rebalancing strategies', duration: '26:10' },
+      { title: 'Cross-shard transactions', duration: '31:15' },
+    ],
+  },
+  {
+    title: '4. Observability & Reliability',
+    lessons: [
+      { title: 'Distributed tracing', duration: '20:00' },
+      { title: 'Chaos engineering', duration: '28:45' },
+      { title: 'On-call best practices', duration: '16:30' },
+    ],
+  },
+];
+---
+
+<ContentLayout
+  frontmatter={content}
+  title={content.title}
+  description={content.description}
+  breadcrumbs={[
+    { label: 'Home', href: '/' },
+    { label: 'Courses', href: '/course' },
+    { label: content.title },
+  ]}
+  currentSection={`${content.title} Course`}
+  author={course.instructor}
+>
+  <div class="max-w-7xl mx-auto px-4 py-8 lg:py-12">
+    <div class="grid lg:grid-cols-[1fr_360px] gap-8">
+      <div class="min-w-0">
+        <div class="relative rounded-2xl overflow-hidden mb-8 aspect-video bg-base-300">
+          <img
+            src="https://images.pexels.com/photos/1181271/pexels-photo-1181271.jpeg?auto=compress&cs=tinysrgb&w=1200&h=600&fit=crop"
+            alt="Course preview"
+            class="w-full h-full object-cover"
+          />
+          <button
+            class="absolute inset-0 flex items-center justify-center bg-base-300/30 hover:bg-base-300/40 transition-colors group"
+          >
+            <span
+              class="btn btn-circle btn-primary btn-lg shadow-xl group-hover:scale-110 transition-transform"
+              ><Icon name="lucide:play" class="h-8 w-8" /></span
+            >
+          </button>
+        </div>
+        <div class="flex items-center gap-2 mb-3">
+          <span class="badge badge-primary">Course</span>
+          <span class="badge badge-outline">{course.level}</span>
+          <span class="badge badge-success gap-1"
+            ><Icon name="lucide:award" class="h-3 w-3" /> Certificate</span
+          >
+        </div>
+        <h1 class="text-3xl md:text-4xl font-bold tracking-tight mb-3">{content.title}</h1>
+        <p class="text-lg text-base-content/60 mb-4">{content.description}</p>
+        <div class="flex items-center gap-4 text-sm text-base-content/60 mb-6">
+          <RatingStars rating={4.8} count={2847} size="sm" />
+          <span class="flex items-center gap-1"
+            ><Icon name="lucide:users" class="h-3.5 w-3.5" /> 12,408 enrolled</span
+          >
+          <span class="flex items-center gap-1"
+            ><Icon name="lucide:clock" class="h-3.5 w-3.5" /> {course.duration}</span
+          >
+        </div>
+        <div class="prose-vedify"><slot /></div>
+        <CurriculumList modules={modules} progress={42} />
+        <div class="mt-8"><TagList tags={content.tags} /></div>
+        <div class="my-8"><InteractionGroup /></div>
+        <div class="mt-12"><CommentSection /></div>
+      </div>
+      <aside class="lg:sticky lg:top-24 lg:self-start">
+        <div class="card bg-base-100 border border-base-300 mb-6">
+          <div class="card-body">
+            <div class="flex items-baseline gap-2 mb-3">
+              <span class="text-3xl font-bold">$89</span><span
+                class="text-base-content/40 line-through">$199</span
+              ><span class="badge badge-success">55% off</span>
+            </div>
+            <a href="/course-lesson" class="btn btn-primary w-full mb-2 gap-2"
+              ><Icon name="lucide:play" class="h-4 w-4" /> Start Learning</a
+            >
+            <button class="btn btn-outline w-full gap-2"
+              ><Icon name="lucide:bookmark" class="h-4 w-4" /> Save for Later</button
+            >
+          </div>
+        </div>
+        <CourseMeta course={course} />
+        <div class="mt-6"><AdSlot variant="sidebar" /></div>
+        <div class="mt-6">
+          <AuthorCard
+            name={resolvedAuthor.name}
+            role={resolvedAuthor.role ?? 'Distributed Systems Researcher'}
+            bio={resolvedAuthor.bio ??
+              'Author of Practical Distributed Systems. 15 years building large-scale infrastructure.'}
+            avatar={resolvedAuthor.avatar ??
+              'https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop'}
+            stats={resolvedAuthor.stats ?? [
+              { label: 'Students', value: '42k' },
+              { label: 'Courses', value: 6 },
+              { label: 'Rating', value: '4.9' },
+            ]}
+          />
+        </div>
+      </aside>
+    </div>
+  </div>
+</ContentLayout>

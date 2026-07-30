@@ -1,0 +1,99 @@
+---
+import { Icon } from 'astro-icon/components';
+import { researchSchema } from '@vedify/schema';
+import type { z } from '@vedify/schema';
+import ContentLayout from '@/layouts/ContentLayout.astro';
+import PatentMeta from '@/components/organisms/PatentMeta.astro';
+import AiSummary from '@/components/organisms/AiSummary.astro';
+import TagList from '@/components/molecules/TagList.astro';
+import InteractionGroup from '@/components/molecules/InteractionGroup.astro';
+import CommentSection from '@/components/molecules/CommentSection.astro';
+import AdSlot from '@/components/molecules/AdSlot.astro';
+
+type Props = z.infer<typeof researchSchema>;
+const content = Astro.props as Props;
+
+const patent = {
+  number: content.patentNumber ?? '',
+  filed: 'Mar 14, 2023',
+  granted: content.issueDate ?? '',
+  inventors: content.author,
+  assignee: content.applicant ?? '',
+  status: 'Active',
+  classification: 'H04L 67/10',
+};
+---
+
+<ContentLayout
+  frontmatter={content}
+  title={`Patent: ${content.title}`}
+  description={content.description}
+  breadcrumbs={[
+    { label: 'Home', href: '/' },
+    { label: 'Patents', href: '/patent' },
+    { label: patent.number },
+  ]}
+  currentSection="Patent"
+>
+  <div class="max-w-7xl mx-auto px-4 py-8 lg:py-12">
+    <div class="grid lg:grid-cols-[1fr_320px] gap-8">
+      <div class="min-w-0">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="badge badge-primary gap-1"
+            ><Icon name="lucide:award" class="h-3.5 w-3.5" /> Patent</span
+          >
+          <span class="badge badge-success gap-1"
+            ><Icon name="lucide:check-circle-2" class="h-3 w-3" /> Granted</span
+          >
+        </div>
+        <h1 class="text-2xl md:text-3xl font-bold tracking-tight mb-2">{content.title}</h1>
+        <p class="text-base-content/60 mb-4 font-mono">{patent.number}</p>
+
+        <AiSummary
+          summary={content.description}
+          keyPoints={[
+            'Routes requests based on causal dependencies.',
+            'Compact metadata header — no central coordinator.',
+            'Run-length encoded for low bandwidth overhead.',
+          ]}
+        />
+
+        <div class="prose-vedify mt-8"><slot /></div>
+
+        <div class="mt-8"><TagList tags={content.tags} /></div>
+        <div class="my-8"><InteractionGroup /></div>
+        <div class="my-8"><AdSlot variant="banner" /></div>
+        <div class="mt-12"><CommentSection /></div>
+      </div>
+
+      <aside class="space-y-6 lg:sticky lg:top-24 lg:self-start">
+        <PatentMeta patent={patent} />
+        <div class="card bg-base-100 border border-base-300">
+          <div class="card-body p-4">
+            <h3 class="font-semibold mb-2 flex items-center gap-2">
+              <Icon name="lucide:download" class="h-4 w-4" /> Documents
+            </h3>
+            <ul class="space-y-2 text-sm">
+              <li>
+                <a href="#" class="link link-hover flex items-center gap-2"
+                  ><Icon name="lucide:file-text" class="h-4 w-4" /> Full specification (PDF)</a
+                >
+              </li>
+              <li>
+                <a href="#" class="link link-hover flex items-center gap-2"
+                  ><Icon name="lucide:file-text" class="h-4 w-4" /> Drawings (PDF)</a
+                >
+              </li>
+              <li>
+                <a href="#" class="link link-hover flex items-center gap-2"
+                  ><Icon name="lucide:file-text" class="h-4 w-4" /> Prosecution history</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+        <AdSlot variant="sidebar" />
+      </aside>
+    </div>
+  </div>
+</ContentLayout>

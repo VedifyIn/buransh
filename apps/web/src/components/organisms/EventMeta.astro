@@ -1,0 +1,32 @@
+---
+import ContentMeta from '@/components/organisms/ContentMeta.astro';
+
+interface Event {
+  date: string;
+  time: string;
+  location: string;
+  venue: string;
+  duration: string;
+  price: string;
+  capacity: string;
+}
+
+interface Props {
+  event: Event;
+  type?: string;
+}
+
+const { event, type } = Astro.props;
+const items = [
+  { icon: 'calendar', label: 'Date', value: event.date },
+  { icon: 'clock', label: 'Time', value: event.time },
+  { icon: 'map-pin', label: 'Location', value: event.location },
+  { icon: 'building', label: 'Venue', value: event.venue },
+  { icon: 'timer', label: 'Duration', value: event.duration },
+  { icon: 'ticket', label: 'Price', value: event.price },
+  { icon: 'users', label: 'Capacity', value: event.capacity },
+  ...(type ? [{ icon: 'tag', label: 'Type', value: type }] : []),
+];
+---
+
+<ContentMeta items={items} title="Event Details" />

@@ -1,0 +1,22 @@
+---
+import ContentMeta from '@/components/organisms/ContentMeta.astro';
+
+interface Paper {
+  authors: string;
+  journal: string;
+  citation: string;
+  published: string;
+  doi: string;
+}
+
+const { paper } = Astro.props as { paper: Paper };
+const items = [
+  { icon: 'users', label: 'Authors', value: paper.authors },
+  { icon: 'book-open', label: 'Journal', value: paper.journal },
+  { icon: 'calendar', label: 'Published', value: paper.published },
+  { icon: 'link', label: 'DOI', value: paper.doi },
+  ...(paper.citation ? [{ icon: 'quote', label: 'Citation', value: paper.citation }] : []),
+];
+---
+
+<ContentMeta items={items} title="Publication Details" />

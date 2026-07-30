@@ -1,0 +1,747 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import { Icon } from 'astro-icon/components';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { load } from 'js-yaml';
+
+export const prerender = false;
+
+const __dirname = fileURLToPath(new URL('.', import.meta.url));
+const raw = load(readFileSync(resolve(__dirname, '../data/config.yaml'), 'utf-8')) as Record<
+  string,
+  unknown
+>;
+const searchCfg = (raw.search ?? {}) as { suggestedTags?: string[] };
+const envTags = import.meta.env.PUBLIC_SEARCH_TAGS;
+const suggestedTags = envTags ? envTags.split(',') : (searchCfg.suggestedTags ?? []);
+---
+
+<Layout title="Search - Vedify" description="Search across all content on Vedify.">
+  <section class="py-8 lg:py-12">
+    <div class="max-w-5xl mx-auto px-4">
+      <div class="flex items-center gap-4 mb-6">
+        <div class="relative flex-1">
+          <Icon
+            name="lucide:search"
+            class="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-base-content/40"
+          />
+          <input
+            id="search-query"
+            type="search"
+            placeholder="Search essays, tutorials, courses..."
+            class="input input-bordered w-full pl-12 pr-4 py-3 text-lg rounded-2xl"
+            autofocus
+          />
+        </div>
+        <kbd class="kbd kbd-sm hidden sm:inline-flex">Esc</kbd>
+      </div>
+
+      <div id="filter-bar" class="flex flex-wrap items-center gap-2 mb-6">
+        <div class="dropdown dropdown-bottom">
+          <button
+            tabindex="0"
+            role="button"
+            class="btn btn-ghost btn-sm border border-base-300 rounded-lg gap-1"
+            id="filter-type-btn"
+          >
+            Type <Icon name="lucide:chevron-down" class="h-3 w-3" />
+          </button>
+          <div
+            tabindex="0"
+            class="dropdown-content z-50 card card-compact w-56 shadow-lg bg-base-100 rounded-box mt-1 border border-base-300 p-2"
+            id="filter-type-options"
+          >
+          </div>
+        </div>
+
+        <div class="dropdown dropdown-bottom">
+          <button
+            tabindex="0"
+            role="button"
+            class="btn btn-ghost btn-sm border border-base-300 rounded-lg gap-1"
+            id="filter-tags-btn"
+          >
+            Tags <Icon name="lucide:chevron-down" class="h-3 w-3" />
+          </button>
+          <div
+            tabindex="0"
+            class="dropdown-content z-50 card card-compact w-64 shadow-lg bg-base-100 rounded-box mt-1 border border-base-300 p-2"
+            id="filter-tags-options"
+          >
+            <div class="relative mb-2">
+              <Icon
+                name="lucide:search"
+                class="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-base-content/40"
+              />
+              <input
+                type="text"
+                placeholder="Filter tags\u2026"
+                class="input input-ghost input-xs w-full pl-8 border border-base-300 rounded-md"
+                id="filter-tags-search"
+              />
+            </div>
+            <div id="filter-tags-list" class="max-h-48 overflow-y-auto space-y-1"></div>
+          </div>
+        </div>
+
+        <div class="dropdown dropdown-bottom">
+          <button
+            tabindex="0"
+            role="button"
+            class="btn btn-ghost btn-sm border border-base-300 rounded-lg gap-1"
+            id="filter-categories-btn"
+          >
+            Categories <Icon name="lucide:chevron-down" class="h-3 w-3" />
+          </button>
+          <div
+            tabindex="0"
+            class="dropdown-content z-50 card card-compact w-56 shadow-lg bg-base-100 rounded-box mt-1 border border-base-300 p-2"
+            id="filter-categories-options"
+          >
+          </div>
+        </div>
+
+        <div class="dropdown dropdown-bottom">
+          <button
+            tabindex="0"
+            role="button"
+            class="btn btn-ghost btn-sm border border-base-300 rounded-lg gap-1"
+          >
+            Author <Icon name="lucide:chevron-down" class="h-3 w-3" />
+          </button>
+          <div
+            tabindex="0"
+            class="dropdown-content z-50 card card-compact w-56 shadow-lg bg-base-100 rounded-box mt-1 border border-base-300 p-2"
+            id="filter-author-options"
+          >
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 text-sm">
+          <label class="text-base-content/50 text-xs">From</label>
+          <input
+            type="date"
+            id="filter-date-from"
+            class="input input-ghost input-xs border border-base-300 rounded-md w-32"
+          />
+          <label class="text-base-content/50 text-xs">To</label>
+          <input
+            type="date"
+            id="filter-date-to"
+            class="input input-ghost input-xs border border-base-300 rounded-md w-32"
+          />
+        </div>
+
+        <div class="dropdown dropdown-bottom">
+          <button
+            tabindex="0"
+            role="button"
+            class="btn btn-ghost btn-sm border border-base-300 rounded-lg gap-1"
+            id="filter-sort-btn"
+          >
+            Sort: Relevance <Icon name="lucide:chevron-down" class="h-3 w-3" />
+          </button>
+          <ul
+            tabindex="0"
+            class="dropdown-content z-50 menu menu-sm shadow-lg bg-base-100 rounded-box mt-1 border border-base-300 w-40"
+            id="filter-sort-options"
+          >
+            <li><button data-sort="relevance" class="active">Relevance</button></li>
+            <li><button data-sort="date-desc">Newest first</button></li>
+            <li><button data-sort="date-asc">Oldest first</button></li>
+          </ul>
+        </div>
+
+        <button
+          id="filter-clear"
+          class="btn btn-ghost btn-sm text-xs text-base-content/50 hover:text-base-content hidden gap-1"
+        >
+          <Icon name="lucide:x" class="h-3 w-3" /> Clear
+        </button>
+      </div>
+
+      <div id="search-status" class="text-sm text-base-content/50 mb-4"></div>
+
+      <div id="search-results" class="space-y-3"></div>
+
+      <div id="search-empty" class="hidden text-center py-16">
+        <div
+          class="w-16 h-16 rounded-full bg-base-200 flex items-center justify-center mx-auto mb-4"
+        >
+          <Icon name="lucide:file-search" class="h-8 w-8 text-base-content/40" />
+        </div>
+        <h2 class="text-xl font-semibold mb-1">No results found</h2>
+        <p class="text-base-content/60 text-sm max-w-md mx-auto" id="search-empty-msg">
+          Try adjusting your search terms or filters.
+        </p>
+      </div>
+
+      <div id="search-config" data-tags={JSON.stringify(suggestedTags)} hidden></div>
+
+      <div id="search-welcome" class="text-center py-16">
+        <div
+          class="w-16 h-16 rounded-full bg-base-200 flex items-center justify-center mx-auto mb-4"
+        >
+          <Icon name="lucide:search" class="h-8 w-8 text-base-content/40" />
+        </div>
+        <h2 class="text-xl font-semibold mb-1">Search across all content</h2>
+        <p class="text-base-content/60 text-sm max-w-md mx-auto">
+          Type a query above, or use filters to narrow down by type, tags, author, and date.
+        </p>
+      </div>
+
+      <div id="search-error" class="hidden text-center py-16">
+        <div
+          class="w-16 h-16 rounded-full bg-base-200 flex items-center justify-center mx-auto mb-4"
+        >
+          <Icon name="lucide:alert-circle" class="h-8 w-8 text-error" />
+        </div>
+        <h2 class="text-xl font-semibold mb-1">Search unavailable</h2>
+        <p class="text-base-content/60 text-sm max-w-md mx-auto" id="search-error-msg">
+          The search index could not be loaded.
+        </p>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script is:inline>
+  (function () {
+    var queryInput = document.getElementById('search-query');
+    var resultsEl = document.getElementById('search-results');
+    var statusEl = document.getElementById('search-status');
+    var emptyEl = document.getElementById('search-empty');
+    var welcomeEl = document.getElementById('search-welcome');
+    var errorEl = document.getElementById('search-error');
+    var errorMsg = document.getElementById('search-error-msg');
+    var clearBtn = document.getElementById('filter-clear');
+
+    var typeOptions = document.getElementById('filter-type-options');
+    var tagsList = document.getElementById('filter-tags-list');
+    var tagsSearch = document.getElementById('filter-tags-search');
+    var categoriesOptions = document.getElementById('filter-categories-options');
+    var authorOptions = document.getElementById('filter-author-options');
+    var sortOptions = document.getElementById('filter-sort-options');
+    var sortBtn = document.getElementById('filter-sort-btn');
+    var dateFrom = document.getElementById('filter-date-from');
+    var dateTo = document.getElementById('filter-date-to');
+    var chevronSvg =
+      ' <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>';
+
+    var pagefind = null;
+    var cachedFilters = null;
+    var searchTimer = null;
+
+    var state = {
+      q: '',
+      tags: [],
+      categories: [],
+      types: [],
+      authors: [],
+      sort: 'relevance',
+      dateFrom: '',
+      dateTo: '',
+    };
+
+    function getParams() {
+      var p = new URLSearchParams(window.location.search);
+      state.q = p.get('q') || '';
+      state.tags = (p.get('tags') || '').split(',').filter(Boolean);
+      state.categories = (p.get('categories') || '').split(',').filter(Boolean);
+      state.types = (p.get('types') || '').split(',').filter(Boolean);
+      state.authors = (p.get('authors') || '').split(',').filter(Boolean);
+      state.sort = p.get('sort') || 'relevance';
+      state.dateFrom = p.get('from') || '';
+      state.dateTo = p.get('to') || '';
+    }
+
+    function pushParams() {
+      var p = new URLSearchParams();
+      if (state.q) p.set('q', state.q);
+      if (state.tags.length) p.set('tags', state.tags.join(','));
+      if (state.categories.length) p.set('categories', state.categories.join(','));
+      if (state.types.length) p.set('types', state.types.join(','));
+      if (state.authors.length) p.set('authors', state.authors.join(','));
+      if (state.sort !== 'relevance') p.set('sort', state.sort);
+      if (state.dateFrom) p.set('from', state.dateFrom);
+      if (state.dateTo) p.set('to', state.dateTo);
+      var qs = p.toString();
+      window.history.replaceState(null, '', qs ? '?' + qs : '/search');
+    }
+
+    function formatExcerpt(ex) {
+      return ex.replace(
+        /<mark>/g,
+        '<mark class="bg-primary/20 text-primary font-medium rounded px-0.5">',
+      );
+    }
+
+    function escHtml(s) {
+      var d = document.createElement('div');
+      d.textContent = s;
+      return d.innerHTML;
+    }
+
+    function getTypeLabel(url) {
+      var m = url.match(/^\/([^/]+)/);
+      if (!m) return null;
+      var labels = {
+        blog: 'Blog',
+        essay: 'Essay',
+        tutorial: 'Tutorial',
+        course: 'Course',
+        recipe: 'Recipe',
+        book: 'Book',
+        'book-review': 'Book Review',
+        'research-paper': 'Research Paper',
+        patent: 'Patent',
+        event: 'Event',
+        conference: 'Conference',
+        webinar: 'Webinar',
+        workshop: 'Workshop',
+        podcast: 'Podcast',
+        quote: 'Quote',
+        'course-lesson': 'Course Lesson',
+      };
+      return labels[m[1]] || null;
+    }
+
+    function renderResults(results) {
+      resultsEl.innerHTML = results
+        .map(function (r) {
+          var typeLabel = getTypeLabel(r.url);
+          var meta = r.meta || {};
+          var tags = meta.tags ? meta.tags.split(',').filter(Boolean) : [];
+          return (
+            '<a href="' +
+            r.url +
+            '" class="block card bg-base-100 border border-base-300 rounded-2xl hover:border-primary/40 transition-all hover:shadow-sm">' +
+            '<div class="card-body py-4 px-5">' +
+            '<div class="flex flex-wrap items-center gap-2 mb-1">' +
+            (typeLabel ? '<span class="badge badge-ghost badge-xs">' + typeLabel + '</span>' : '') +
+            (meta.author
+              ? '<span class="text-xs text-base-content/50">' + escHtml(meta.author) + '</span>'
+              : '') +
+            (meta.date
+              ? '<span class="text-xs text-base-content/50">' + escHtml(meta.date) + '</span>'
+              : '') +
+            '</div>' +
+            '<h3 class="font-semibold text-base leading-snug">' +
+            (meta.title ? escHtml(meta.title) : 'Untitled') +
+            '</h3>' +
+            '<p class="text-sm text-base-content/70 leading-relaxed mt-1">' +
+            formatExcerpt(r.excerpt) +
+            '</p>' +
+            (tags.length
+              ? '<div class="flex flex-wrap gap-1 mt-2">' +
+                tags
+                  .slice(0, 5)
+                  .map(function (t) {
+                    return '<span class="badge badge-soft badge-xs">' + escHtml(t) + '</span>';
+                  })
+                  .join('') +
+                '</div>'
+              : '') +
+            '</div>' +
+            '</a>'
+          );
+        })
+        .join('');
+    }
+
+    function buildCheckboxList(id, filterName, items) {
+      var el =
+        id === 'tags'
+          ? tagsList
+          : id === 'categories'
+            ? categoriesOptions
+            : id === 'types'
+              ? typeOptions
+              : authorOptions;
+      if (!el) return;
+      var selected =
+        state[
+          id === 'tags'
+            ? 'tags'
+            : id === 'categories'
+              ? 'categories'
+              : id === 'types'
+                ? 'types'
+                : 'authors'
+        ];
+      var entries = Object.keys(items).sort();
+      el.innerHTML = entries
+        .map(function (key) {
+          var checked = selected.indexOf(key) !== -1 ? ' checked' : '';
+          return (
+            '<label class="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-base-200 cursor-pointer text-sm"><input type="checkbox" class="checkbox checkbox-xs" value="' +
+            escHtml(key) +
+            '"' +
+            checked +
+            ' /><span class="flex-1 truncate">' +
+            escHtml(key) +
+            '</span><span class="text-xs text-base-content/40">' +
+            items[key] +
+            '</span></label>'
+          );
+        })
+        .join('');
+      el.querySelectorAll('input[type="checkbox"]').forEach(function (cb) {
+        cb.addEventListener('change', function () {
+          var arr =
+            state[
+              id === 'tags'
+                ? 'tags'
+                : id === 'categories'
+                  ? 'categories'
+                  : id === 'types'
+                    ? 'types'
+                    : 'authors'
+            ];
+          var v = cb.value;
+          if (cb.checked) {
+            if (arr.indexOf(v) === -1) arr.push(v);
+          } else {
+            var idx = arr.indexOf(v);
+            if (idx !== -1) arr.splice(idx, 1);
+          }
+          scheduleSearch();
+        });
+      });
+    }
+
+    function loadFilters() {
+      if (cachedFilters) {
+        applyFilterOptions(cachedFilters);
+        return;
+      }
+      var cfgEl = document.getElementById('search-config');
+      var suggested = cfgEl ? JSON.parse(cfgEl.dataset.tags || '[]') : [];
+      if (suggested.length && !tagsList.querySelectorAll('label').length) {
+        buildCheckboxList(
+          'tags',
+          'tag',
+          suggested.reduce(function (acc, t) {
+            acc[t] = 0;
+            return acc;
+          }, {}),
+        );
+      }
+      if (!pagefind) return;
+      pagefind.filters().then(function (filters) {
+        cachedFilters = filters;
+        applyFilterOptions(filters);
+      });
+    }
+
+    function applyFilterOptions(filters) {
+      if (filters.type) buildCheckboxList('types', 'type', filters.type);
+      if (filters.tag) buildCheckboxList('tags', 'tag', filters.tag);
+      if (filters.category) buildCheckboxList('categories', 'category', filters.category);
+      if (filters.author) buildCheckboxList('authors', 'author', filters.author);
+    }
+
+    function buildPagefindSort() {
+      if (state.sort === 'date-desc') return { date: 'desc' };
+      if (state.sort === 'date-asc') return { date: 'asc' };
+      return undefined;
+    }
+
+    function clientFilterPasses(r) {
+      var meta = r.meta || {};
+      var rTags = (meta.tags || '').split(',').filter(Boolean);
+      var rCats = (meta.categories || '').split(',').filter(Boolean);
+      var rType = meta.type || '';
+      var rAuthor = meta.author || '';
+      var rDate = meta.date || '';
+
+      if (state.types.length && state.types.indexOf(rType) === -1) return false;
+      if (state.authors.length && state.authors.indexOf(rAuthor) === -1) return false;
+      if (
+        state.tags.length &&
+        !state.tags.some(function (t) {
+          return rTags.indexOf(t) !== -1;
+        })
+      )
+        return false;
+      if (
+        state.categories.length &&
+        !state.categories.some(function (c) {
+          return rCats.indexOf(c) !== -1;
+        })
+      )
+        return false;
+
+      if (state.dateFrom && rDate < state.dateFrom) return false;
+      if (state.dateTo && rDate > state.dateTo) return false;
+
+      return true;
+    }
+
+    function getActiveFilterGroups() {
+      var groups = [];
+      if (state.types.length) groups.push({ key: 'type', vals: state.types });
+      if (state.tags.length) groups.push({ key: 'tag', vals: state.tags });
+      if (state.categories.length) groups.push({ key: 'category', vals: state.categories });
+      if (state.authors.length) groups.push({ key: 'author', vals: state.authors });
+      return groups;
+    }
+
+    async function searchWithOr(query, sort) {
+      // Text query: search once, then client-filter for OR within groups
+      if (query) {
+        var opts = {};
+        if (sort) opts.sort = sort;
+        var s = await pagefind.search(query, opts);
+        var results = await Promise.all(
+          s.results.map(function (r) {
+            return r.data();
+          }),
+        );
+        return results.filter(clientFilterPasses);
+      }
+
+      // No query + no filters → nothing to search
+      var groups = getActiveFilterGroups();
+      if (!groups.length) return [];
+
+      // No query + filters → OR within group, AND between groups.
+      // Search each filter value independently and merge (union within group, intersect between groups).
+      var pfSort = sort || undefined;
+
+      // Search each filter value independently
+      var groupResults = groups.map(function (group) {
+        return Promise.all(
+          group.vals.map(function (val) {
+            var f = {};
+            f[group.key] = [val];
+            return pagefind.search({ filters: f, sort: pfSort }).then(function (s) {
+              return Promise.all(
+                s.results.map(function (r) {
+                  return r.data();
+                }),
+              );
+            });
+          }),
+        );
+      });
+
+      var resolved = await Promise.all(groupResults);
+
+      // Union within each group: deduplicate by URL
+      var groupSets = resolved.map(function (group) {
+        var seen = {};
+        group.forEach(function (valResults) {
+          valResults.forEach(function (r) {
+            seen[r.url] = r;
+          });
+        });
+        return Object.keys(seen).map(function (url) {
+          return seen[url];
+        });
+      });
+
+      // Intersect between groups: keep only URLs present in ALL active groups
+      if (groupSets.length === 1) return groupSets[0].filter(clientFilterPasses);
+
+      var urlCounts = {};
+      groupSets.forEach(function (set) {
+        var dedup = {};
+        set.forEach(function (r) {
+          dedup[r.url] = true;
+        });
+        Object.keys(dedup).forEach(function (url) {
+          urlCounts[url] = (urlCounts[url] || 0) + 1;
+        });
+      });
+
+      var intersection = groupSets[0].filter(function (r) {
+        return urlCounts[r.url] === groups.length && clientFilterPasses(r);
+      });
+      return intersection;
+    }
+
+    async function doSearch(query) {
+      var trimmed = query.trim();
+      state.q = trimmed;
+
+      if (
+        !trimmed &&
+        !state.types.length &&
+        !state.tags.length &&
+        !state.categories.length &&
+        !state.authors.length
+      ) {
+        resultsEl.innerHTML = '';
+        statusEl.textContent = '';
+        emptyEl.classList.add('hidden');
+        welcomeEl.classList.remove('hidden');
+        errorEl.classList.add('hidden');
+        updateClearBtn();
+        return;
+      }
+
+      welcomeEl.classList.add('hidden');
+      errorEl.classList.add('hidden');
+      emptyEl.classList.add('hidden');
+
+      if (!pagefind) {
+        statusEl.textContent = 'Loading search index\u2026';
+        try {
+          var pfPath = '/pagefind/pagefind.js';
+          pagefind = await import(/* @vite-ignore */ pfPath);
+        } catch (e) {
+          errorMsg.textContent =
+            'Search index not available. Build the site with pagefind enabled.';
+          errorEl.classList.remove('hidden');
+          statusEl.textContent = '';
+          return;
+        }
+      }
+
+      loadFilters();
+      statusEl.textContent = 'Searching\u2026';
+      pushParams();
+
+      try {
+        var pfSort = buildPagefindSort();
+        var filtered = await searchWithOr(trimmed, pfSort);
+
+        statusEl.textContent =
+          filtered.length === 1 ? '1 result found' : filtered.length + ' results found';
+
+        if (filtered.length === 0) {
+          resultsEl.innerHTML = '';
+          emptyEl.classList.remove('hidden');
+        } else {
+          renderResults(filtered);
+          emptyEl.classList.add('hidden');
+        }
+      } catch (e) {
+        statusEl.textContent = '';
+        errorMsg.textContent = 'An error occurred while searching.';
+        errorEl.classList.remove('hidden');
+      }
+      updateClearBtn();
+    }
+
+    function scheduleSearch() {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(function () {
+        doSearch(queryInput.value);
+      }, 200);
+    }
+
+    function updateClearBtn() {
+      var hasFilters =
+        state.types.length ||
+        state.tags.length ||
+        state.categories.length ||
+        state.authors.length ||
+        state.sort !== 'relevance' ||
+        state.dateFrom ||
+        state.dateTo;
+      clearBtn.classList.toggle('hidden', !hasFilters);
+    }
+
+    function resetFilters() {
+      state.types = [];
+      state.tags = [];
+      state.categories = [];
+      state.authors = [];
+      state.sort = 'relevance';
+      state.dateFrom = '';
+      state.dateTo = '';
+      sortBtn.innerHTML = 'Sort: Relevance' + chevronSvg;
+      dateFrom.value = '';
+      dateTo.value = '';
+      cachedFilters = null;
+      loadFilters();
+      scheduleSearch();
+    }
+
+    clearBtn.addEventListener('click', resetFilters);
+
+    queryInput.addEventListener('input', function () {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(function () {
+        doSearch(queryInput.value);
+      }, 200);
+    });
+
+    queryInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        clearTimeout(searchTimer);
+        doSearch(queryInput.value);
+      }
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && document.activeElement === queryInput) {
+        queryInput.blur();
+        if (!queryInput.value) window.history.back();
+      }
+    });
+
+    sortOptions.querySelectorAll('[data-sort]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        sortOptions.querySelectorAll('.active').forEach(function (a) {
+          a.classList.remove('active');
+        });
+        btn.classList.add('active');
+        state.sort = btn.dataset.sort;
+        var labels = {
+          relevance: 'Relevance',
+          'date-desc': 'Newest first',
+          'date-asc': 'Oldest first',
+        };
+        sortBtn.innerHTML = 'Sort: ' + labels[state.sort] + chevronSvg;
+        scheduleSearch();
+      });
+    });
+
+    dateFrom.addEventListener('change', function () {
+      state.dateFrom = dateFrom.value;
+      scheduleSearch();
+    });
+    dateTo.addEventListener('change', function () {
+      state.dateTo = dateTo.value;
+      scheduleSearch();
+    });
+
+    tagsSearch.addEventListener('input', function () {
+      var q = tagsSearch.value.toLowerCase();
+      tagsList.querySelectorAll('label').forEach(function (l) {
+        l.style.display = l.textContent.toLowerCase().indexOf(q) !== -1 ? '' : 'none';
+      });
+    });
+
+    getParams();
+    if (state.q) queryInput.value = state.q;
+    if (state.dateFrom) dateFrom.value = state.dateFrom;
+    if (state.dateTo) dateTo.value = state.dateTo;
+    if (state.sort !== 'relevance') {
+      var labels = {
+        relevance: 'Relevance',
+        'date-desc': 'Newest first',
+        'date-asc': 'Oldest first',
+      };
+      sortBtn.innerHTML = 'Sort: ' + labels[state.sort] + chevronSvg;
+      sortOptions.querySelector('[data-sort="' + state.sort + '"]')?.classList.add('active');
+      sortOptions.querySelector('[data-sort="relevance"]')?.classList.remove('active');
+    }
+
+    if (
+      state.q ||
+      state.types.length ||
+      state.tags.length ||
+      state.categories.length ||
+      state.authors.length
+    ) {
+      doSearch(state.q || '');
+    }
+  })();
+</script>

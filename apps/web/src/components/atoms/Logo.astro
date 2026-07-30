@@ -1,0 +1,28 @@
+---
+interface Props {
+  initial?: string;
+  size?: 'sm' | 'md' | 'lg';
+  ring?: 'none' | 'primary' | 'accent';
+  class?: string;
+}
+
+const { initial = 'V', size = 'md', ring = 'primary', class: className = '' } = Astro.props;
+
+const sizes: Record<string, string> = {
+  sm: 'h-8 w-8 text-sm',
+  md: 'h-10 w-10 text-base',
+  lg: 'h-12 w-12 text-lg',
+};
+
+const rings: Record<string, string> = {
+  none: '',
+  primary: 'ring ring-primary ring-offset-2 ring-offset-base-100',
+  accent: 'ring ring-accent ring-offset-2 ring-offset-base-100',
+};
+---
+
+<div
+  class={`rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center ${sizes[size]} ${rings[ring]} ${className}`}
+>
+  <span class="text-primary-content font-bold">{initial}</span>
+</div>

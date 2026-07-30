@@ -1,0 +1,30 @@
+---
+import Icon from '@/components/atoms/Icon.astro';
+
+interface Props {
+  variant?: 'inline' | 'sidebar' | 'banner';
+  label?: string;
+}
+
+const { variant = 'inline', label = 'Advertisement' } = Astro.props;
+
+const dims: Record<string, string> = {
+  inline: 'h-24 md:h-32',
+  sidebar: 'h-64',
+  banner: 'h-20',
+};
+---
+
+<div
+  class={`relative overflow-hidden rounded-xl border border-dashed border-base-300 bg-base-200/50 flex items-center justify-center ${dims[variant]}`}
+>
+  <div class="text-center">
+    <p class="text-xs text-base-content/40 uppercase tracking-wider">{label}</p>
+    <p class="text-sm text-base-content/30 mt-1">
+      {variant === 'sidebar' ? '300 × 250' : '728 × 90'}
+    </p>
+  </div>
+  <span class="absolute top-2 right-2">
+    <Icon name="lucide:info" size="xs" class="text-base-content/30" />
+  </span>
+</div>

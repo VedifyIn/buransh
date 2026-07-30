@@ -1,0 +1,33 @@
+---
+import { type CollectionEntry, getCollection, render } from 'astro:content';
+import { getTypeInfo, urlToSchemaType } from '@/lib/content/type-registry';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('content');
+  return entries.map((entry) => {
+    const typeSlug = entry.id.split('/')[0];
+    const slug = entry.id.replace(`${typeSlug}/`, '');
+    return { params: { type: typeSlug, slug }, props: entry };
+  });
+}
+
+type Props = CollectionEntry<'content'>;
+
+const entry = Astro.props;
+const typeInfo = getTypeInfo(entry.data.type);
+const Layout = typeInfo?.layout;
+const layoutProps = typeInfo?.layoutProps ?? {};
+const { Content } = await render(entry);
+---
+
+{
+  Layout ? (
+    <Layout {...entry.data} {...layoutProps}>
+      <Content />
+    </Layout>
+  ) : (
+    <Layout {...entry.data}>
+      <Content />
+    </Layout>
+  )
+}

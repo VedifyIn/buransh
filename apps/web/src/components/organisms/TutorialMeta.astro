@@ -1,0 +1,26 @@
+---
+import ContentMeta from '@/components/organisms/ContentMeta.astro';
+
+interface Tutorial {
+  author: string;
+  published: string;
+  updated: string;
+  readTime: string;
+  difficulty: string;
+  language: string;
+  version: string;
+}
+
+const { tutorial } = Astro.props as { tutorial: Tutorial };
+const items = [
+  { icon: 'user', label: 'Author', value: tutorial.author },
+  { icon: 'calendar', label: 'Published', value: tutorial.published },
+  { icon: 'refresh-cw', label: 'Updated', value: tutorial.updated },
+  { icon: 'clock', label: 'Read time', value: tutorial.readTime },
+  { icon: 'bar-chart-3', label: 'Difficulty', value: tutorial.difficulty },
+  { icon: 'languages', label: 'Language', value: tutorial.language },
+  { icon: 'git-branch', label: 'Version', value: tutorial.version },
+];
+---
+
+<ContentMeta items={items} title="Tutorial Details" />

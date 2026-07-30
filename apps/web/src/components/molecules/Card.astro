@@ -1,0 +1,36 @@
+---
+interface Props {
+  variant?: 'default' | 'gradient' | 'outline';
+  gradientFrom?: string;
+  gradientTo?: string;
+  borderClass?: string;
+  padding?: 'sm' | 'md' | 'lg';
+  class?: string;
+}
+
+const {
+  variant = 'default',
+  gradientFrom = 'primary',
+  gradientTo = 'secondary',
+  borderClass = 'border-base-300',
+  padding = 'md',
+  class: className = '',
+} = Astro.props;
+
+const paddings: Record<string, string> = {
+  sm: 'p-4',
+  md: 'p-5',
+  lg: 'p-6',
+};
+
+const cardClass =
+  variant === 'gradient'
+    ? `card bg-gradient-to-br from-${gradientFrom}/5 to-${gradientTo}/5 border border-${gradientFrom}/20`
+    : `card bg-base-100 border ${borderClass}`;
+---
+
+<div class={`${cardClass} ${className}`}>
+  <div class={`card-body ${paddings[padding]}`}>
+    <slot />
+  </div>
+</div>

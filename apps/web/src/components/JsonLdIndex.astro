@@ -1,0 +1,33 @@
+---
+import { getWebsiteSchema, getOrganizationSchema } from '@vedify/schema/schema-library';
+import type { OrganizationConfig } from '@vedify/schema';
+
+interface Props {
+  siteUrl: string;
+  title: string;
+  description: string;
+  organization?: OrganizationConfig;
+}
+
+const { siteUrl, title, description, organization } = Astro.props;
+const cleanUrl = siteUrl.replace(/\/+$/, '');
+
+const website = getWebsiteSchema(cleanUrl, organization);
+const org = getOrganizationSchema(cleanUrl, organization);
+
+const webpage = {
+  '@type': 'WebPage',
+  '@id': `${cleanUrl}/#webpage`,
+  url: cleanUrl,
+  name: title,
+  description,
+  isPartOf: { '@id': website['@id'] },
+};
+
+const graph = [website, webpage, org].filter(Boolean);
+---
+
+<script
+  type="application/ld+json"
+  set:html={JSON.stringify({ '@context': 'https://schema.org', '@graph': graph })}
+/>

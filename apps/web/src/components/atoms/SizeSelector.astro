@@ -1,0 +1,45 @@
+---
+import { Icon } from 'astro-icon/components';
+
+interface Props {
+  size?: 'sm' | 'md';
+}
+
+const { size = 'md' } = Astro.props;
+
+const sizes: Record<string, string> = {
+  sm: 'btn-sm',
+  md: '',
+};
+---
+
+<div class="flex items-center gap-2">
+  <span class="text-xs text-base-content/60">A</span>
+  <input
+    id="font-size-slider"
+    type="range"
+    min="14"
+    max="24"
+    value="16"
+    class="range range-xs range-primary w-24"
+  />
+  <span class="text-lg font-medium">A</span>
+</div>
+
+<script>
+  const slider = document.getElementById('font-size-slider') as HTMLInputElement;
+  const rootStyle = document.documentElement.style;
+
+  function applySize(val: string) {
+    rootStyle.setProperty('--reading-size', `${val}px`);
+    localStorage.setItem('vedify-font-size', val);
+  }
+
+  const savedSize = localStorage.getItem('vedify-font-size');
+  if (savedSize) {
+    slider.value = savedSize;
+    applySize(savedSize);
+  }
+
+  slider?.addEventListener('input', (e) => applySize((e.target as HTMLInputElement).value));
+</script>

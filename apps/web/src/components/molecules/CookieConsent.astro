@@ -1,0 +1,51 @@
+---
+export interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+---
+
+{/* Renders nothing server-side; the inline script builds and shows the banner on first visit */}
+<div id="cookie-consent-banner" class={`fixed bottom-0 left-0 right-0 z-[100] hidden ${className}`}>
+  <div class="bg-base-100 border-t border-base-300 shadow-xl p-4 md:p-5">
+    <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-start md:items-center gap-4">
+      <div class="flex-1 text-sm text-base-content/80">
+        <p class="font-medium text-base-content">This site uses cookies</p>
+        <p>
+          We use cookies and similar technologies to improve your browsing experience and analyze
+          site traffic. You can accept all or reject non-essential cookies.
+        </p>
+      </div>
+      <div class="flex items-center gap-2 shrink-0">
+        <a href="/cookies" class="btn btn-ghost btn-sm text-xs">Learn more</a>
+        <button id="cookie-reject" class="btn btn-outline btn-sm">Reject all</button>
+        <button id="cookie-accept" class="btn btn-primary btn-sm">Accept all</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var KEY = 'vedify-consent';
+    var banner = document.getElementById('cookie-consent-banner');
+
+    if (localStorage.getItem(KEY)) return;
+    if (!banner) return;
+
+    banner.classList.remove('hidden');
+
+    function dismiss(consent) {
+      localStorage.setItem(KEY, consent);
+      banner.classList.add('hidden');
+    }
+
+    document.getElementById('cookie-accept')?.addEventListener('click', function () {
+      dismiss('accepted');
+    });
+    document.getElementById('cookie-reject')?.addEventListener('click', function () {
+      dismiss('rejected');
+    });
+  })();
+</script>

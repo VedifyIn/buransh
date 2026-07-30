@@ -1,0 +1,26 @@
+---
+import ContentMeta from '@/components/organisms/ContentMeta.astro';
+
+interface Patent {
+  number: string;
+  filed: string;
+  granted: string;
+  inventors: string;
+  assignee: string;
+  status: string;
+  classification: string;
+}
+
+const { patent } = Astro.props as { patent: Patent };
+const items = [
+  { icon: 'hash', label: 'Patent No.', value: patent.number },
+  { icon: 'file-text', label: 'Filed', value: patent.filed },
+  { icon: 'check-circle-2', label: 'Granted', value: patent.granted },
+  { icon: 'users', label: 'Inventors', value: patent.inventors },
+  { icon: 'building-2', label: 'Assignee', value: patent.assignee },
+  { icon: 'badge-check', label: 'Status', value: patent.status },
+  { icon: 'folder-tree', label: 'Class', value: patent.classification },
+];
+---
+
+<ContentMeta items={items} title="Patent Information" />

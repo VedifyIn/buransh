@@ -1,0 +1,16 @@
+---
+interface Props {
+  size?: 'sm' | 'md' | 'lg';
+  class?: string;
+}
+
+const { size = 'md', class: className = '' } = Astro.props;
+
+const sizes: Record<string, string> = {
+  sm: 'range-xs',
+  md: 'range-sm',
+  lg: 'range',
+};
+---
+
+<input type="range" class={`range range-primary ${sizes[size]} ${className}`} />

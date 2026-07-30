@@ -1,0 +1,27 @@
+---
+import ContentMeta from '@/components/organisms/ContentMeta.astro';
+
+interface Book {
+  title: string;
+  author: string;
+  pages: number;
+  publisher: string;
+  published: string;
+  language: string;
+  isbn: string;
+  format: string;
+}
+
+const { book } = Astro.props as { book: Book };
+const items = [
+  { icon: 'user', label: 'Author', value: book.author },
+  { icon: 'book', label: 'Pages', value: String(book.pages) },
+  { icon: 'building-2', label: 'Publisher', value: book.publisher },
+  { icon: 'calendar', label: 'Published', value: book.published },
+  { icon: 'languages', label: 'Language', value: book.language },
+  { icon: 'barcode', label: 'ISBN', value: book.isbn },
+  { icon: 'book-marked', label: 'Format', value: book.format },
+];
+---
+
+<ContentMeta items={items} title="Book Details" />

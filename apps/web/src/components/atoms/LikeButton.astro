@@ -1,0 +1,39 @@
+---
+import { Icon } from 'astro-icon/components';
+
+interface Props {
+  count?: number;
+  active?: boolean;
+  size?: 'sm' | 'md';
+}
+
+const { count = 0, active = false, size = 'md' } = Astro.props;
+
+const sizes: Record<string, string> = {
+  sm: 'btn-sm',
+  md: '',
+};
+---
+
+<button class={`btn ${sizes[size]} gap-2 like-btn ${active ? 'btn-primary' : 'btn-outline'}`}>
+  <Icon name="lucide:heart" class="h-4 w-4" />
+  <span class="like-count">{count}</span>
+</button>
+
+<script>
+  document.querySelectorAll('.like-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const countEl = btn.querySelector('.like-count');
+      const isOutline = btn.classList.contains('btn-outline');
+      if (isOutline) {
+        btn.classList.remove('btn-outline');
+        btn.classList.add('btn-primary');
+        if (countEl) countEl.textContent = String(parseInt(countEl.textContent || '0') + 1);
+      } else {
+        btn.classList.remove('btn-primary');
+        btn.classList.add('btn-outline');
+        if (countEl) countEl.textContent = String(parseInt(countEl.textContent || '0') - 1);
+      }
+    });
+  });
+</script>

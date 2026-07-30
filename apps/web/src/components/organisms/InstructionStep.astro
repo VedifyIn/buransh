@@ -1,0 +1,71 @@
+---
+import { Icon } from 'astro-icon/components';
+import Card from '@/components/molecules/Card.astro';
+
+interface Step {
+  title: string;
+  description: string;
+  duration?: string;
+  tip?: string;
+  image?: string;
+}
+
+interface Props {
+  steps: Step[];
+  numbered?: boolean;
+}
+
+const { steps, numbered = true } = Astro.props;
+---
+
+<ul class={`steps steps-vertical lg:steps-horizontal w-full ${numbered ? '' : 'steps-neutral'}`}>
+  {
+    steps.map((step) => (
+      <li class="step step-primary">
+        <div class="text-left">
+          <p class="font-medium">{step.title}</p>
+          {step.duration && <p class="text-xs text-base-content/60">{step.duration}</p>}
+        </div>
+      </li>
+    ))
+  }
+</ul>
+
+<div class="mt-8 space-y-6">
+  {
+    steps.map((step, i) => (
+      <Card padding="md" class="overflow-hidden">
+        {step.image && (
+          <figure class="aspect-video bg-base-200 -m-5 mb-4">
+            <img
+              src={step.image}
+              alt={step.title}
+              loading="lazy"
+              class="w-full h-full object-cover"
+            />
+          </figure>
+        )}
+        <div class="flex items-center gap-3">
+          <span class="badge badge-primary badge-lg font-bold text-base">{i + 1}</span>
+          <div class="flex-1">
+            <h3 class="font-semibold text-lg">{step.title}</h3>
+            {step.duration && (
+              <p class="text-xs text-base-content/60 flex items-center gap-1 mt-0.5">
+                <Icon name="lucide:timer" class="h-3 w-3" /> {step.duration}
+              </p>
+            )}
+          </div>
+        </div>
+        <p class="text-base-content/80 leading-relaxed mt-2">{step.description}</p>
+        {step.tip && (
+          <div class="alert alert-warning bg-warning/10 border-warning/30 mt-3">
+            <Icon name="lucide:lightbulb" class="h-4 w-4 text-warning" />
+            <span class="text-sm">
+              <strong>Tip:</strong> {step.tip}
+            </span>
+          </div>
+        )}
+      </Card>
+    ))
+  }
+</div>

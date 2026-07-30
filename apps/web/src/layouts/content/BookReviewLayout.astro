@@ -1,0 +1,124 @@
+---
+import { bookSchema } from '@vedify/schema';
+import type { z } from '@vedify/schema';
+import ContentLayout from '@/layouts/ContentLayout.astro';
+import RatingStars from '@/components/atoms/RatingStars.astro';
+import TagList from '@/components/molecules/TagList.astro';
+import AiSummary from '@/components/organisms/AiSummary.astro';
+import AuthorCard from '@/components/organisms/AuthorCard.astro';
+import ExpertOpinion from '@/components/organisms/ExpertOpinion.astro';
+import InteractionGroup from '@/components/molecules/InteractionGroup.astro';
+import CommentSection from '@/components/molecules/CommentSection.astro';
+import AdSlot from '@/components/molecules/AdSlot.astro';
+import { getAuthor } from '@/utils/get-author';
+
+type Props = z.infer<typeof bookSchema>;
+const content = Astro.props as Props;
+const resolvedAuthor = getAuthor(content.author) ?? { name: content.author };
+---
+
+<ContentLayout
+  frontmatter={content}
+  title={`Review: ${content.book?.title ?? content.title}`}
+  description={content.description}
+  breadcrumbs={[
+    { label: 'Home', href: '/' },
+    { label: 'Book Reviews', href: '/book-review' },
+    { label: content.title },
+  ]}
+  currentSection="Book Review"
+>
+  <article class="max-w-3xl mx-auto px-4 py-8 lg:py-12">
+    <header class="mb-8">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="badge badge-primary">Book Review</span>
+        <span class="badge badge-ghost">Engineering</span>
+      </div>
+      <h1 class="text-3xl md:text-4xl font-bold tracking-tight mb-3">{content.title}</h1>
+      <p class="text-lg text-base-content/60 mb-4">{content.description}</p>
+      <div class="flex items-center gap-4 text-sm text-base-content/60">
+        <span>By <strong class="text-base-content">{resolvedAuthor.name}</strong></span>
+        <span>&bull;</span>
+        <span>{content.datePublished}</span>
+      </div>
+    </header>
+
+    <div class="card bg-base-100 border border-base-300 mb-8">
+      <div class="card-body sm:flex-row items-center gap-6">
+        <img
+          src="https://images.pexels.com/photos/1130980/pexels-photo-1130980.jpeg?auto=compress&cs=tinysrgb&w=200&h=300&fit=crop"
+          alt="Book cover"
+          class="w-28 h-40 object-cover rounded-lg shadow-md"
+        />
+        <div class="flex-1">
+          <h2 class="font-semibold text-xl mb-1">{content.book?.title ?? content.title}</h2>
+          <p class="text-sm text-base-content/60 mb-3">
+            {content.book?.author} &bull; {content.book?.publisher} &bull; {
+              content.book?.publicationDate
+            }
+          </p>
+          <div class="space-y-2">
+            <div class="flex items-center justify-between text-sm">
+              <span>Prose quality</span><RatingStars rating={5} size="sm" showValue={false} />
+            </div>
+            <div class="flex items-center justify-between text-sm">
+              <span>Technical depth</span><RatingStars rating={5} size="sm" showValue={false} />
+            </div>
+            <div class="flex items-center justify-between text-sm">
+              <span>Practical relevance</span><RatingStars
+                rating={4.5}
+                size="sm"
+                showValue={false}
+              />
+            </div>
+            <div
+              class="flex items-center justify-between text-sm font-medium pt-2 border-t border-base-300"
+            >
+              <span>Overall</span><RatingStars rating={content.rating?.value ?? 4.8} size="sm" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <AiSummary
+      summary={content.description}
+      keyPoints={[
+        'Best-in-class treatment of replication and consensus.',
+        'Excellent on tradeoffs; never tells you what to do.',
+        'Showing its age on cloud-native and modern stream processing.',
+        'Still the most-recommended book for backend engineers in 2026.',
+      ]}
+    />
+
+    <div class="prose-vedify mt-8"><slot /></div>
+
+    <div class="mt-8">
+      <ExpertOpinion
+        expert="Daniel Abadi"
+        role="Database Professor, UMD"
+        avatar="https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop"
+        quote="If I could assign one book to every new database engineer, it would be this one."
+        rating={5}
+      />
+    </div>
+    <div class="mt-6"><TagList tags={content.tags} /></div>
+    <div class="my-8"><InteractionGroup /></div>
+    <div class="my-8"><AdSlot variant="banner" /></div>
+    <div class="mt-8">
+      <AuthorCard
+        name={resolvedAuthor.name}
+        role={resolvedAuthor.role ?? 'Staff Engineer'}
+        bio={resolvedAuthor.bio ??
+          'Backend and data infra. Reviews books she wishes she read earlier.'}
+        avatar={resolvedAuthor.avatar ??
+          'https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop'}
+        stats={resolvedAuthor.stats ?? [
+          { label: 'Reviews', value: 32 },
+          { label: 'Followers', value: '3.1k' },
+        ]}
+      />
+    </div>
+    <div class="mt-12"><CommentSection /></div>
+  </article>
+</ContentLayout>

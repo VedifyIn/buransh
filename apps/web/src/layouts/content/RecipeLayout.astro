@@ -1,0 +1,124 @@
+---
+import { Icon } from 'astro-icon/components';
+import { recipeSchema } from '@vedify/schema';
+import type { z } from '@vedify/schema';
+import ContentLayout from '@/layouts/ContentLayout.astro';
+import RecipeMeta from '@/components/organisms/RecipeMeta.astro';
+import IngredientList from '@/components/organisms/IngredientList.astro';
+import InstructionStep from '@/components/organisms/InstructionStep.astro';
+import NutritionFacts from '@/components/organisms/NutritionFacts.astro';
+import RatingStars from '@/components/atoms/RatingStars.astro';
+import TagList from '@/components/molecules/TagList.astro';
+import InteractionGroup from '@/components/molecules/InteractionGroup.astro';
+import CommentSection from '@/components/molecules/CommentSection.astro';
+import AdSlot from '@/components/molecules/AdSlot.astro';
+import AuthorCard from '@/components/organisms/AuthorCard.astro';
+import { getAuthor } from '@/utils/get-author';
+
+type Props = z.infer<typeof recipeSchema>;
+const content = Astro.props as Props;
+const resolvedAuthor = getAuthor(content.author) ?? { name: content.author };
+
+const recipe = {
+  prepTime: content.prepTime ?? '',
+  cookTime: content.cookTime ?? '',
+  totalTime: content.totalTime ?? '',
+  servings: content.yields ?? '',
+  calories: content.nutrition?.calories ?? '',
+  difficulty: content.difficulty ?? '',
+  cuisine: content.recipeCuisine ?? '',
+};
+const ingredients = (content.ingredients ?? []).map((i) => ({
+  name: i.name,
+  amount: i.amount,
+  note: i.preparation,
+}));
+const nutrition = {
+  main: [
+    { label: 'Total Fat', value: content.nutrition?.fat ?? '', dailyValue: '23%' },
+    { label: 'Saturated Fat', value: '', dailyValue: '45%' },
+    { label: 'Total Carbohydrate', value: content.nutrition?.carbs ?? '', dailyValue: '19%' },
+    { label: 'Dietary Fiber', value: '2 g', dailyValue: '7%' },
+    { label: 'Total Sugars', value: '3 g' },
+    { label: 'Protein', value: content.nutrition?.protein ?? '', dailyValue: '28%' },
+  ],
+  vitamins: [
+    { label: 'Calcium', value: '180 mg', dailyValue: '14%' },
+    { label: 'Iron', value: '2.1 mg', dailyValue: '12%' },
+    { label: 'Vitamin A', value: '120 µg', dailyValue: '13%' },
+  ],
+};
+---
+
+<ContentLayout
+  frontmatter={content}
+  title={content.title}
+  description={content.description}
+  breadcrumbs={[
+    { label: 'Home', href: '/' },
+    { label: 'Recipes', href: '/recipe' },
+    { label: content.title },
+  ]}
+  currentSection={content.title}
+>
+  <div class="max-w-7xl mx-auto px-4 py-8 lg:py-12">
+    <header class="max-w-3xl mb-8">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="badge badge-primary gap-1"
+          ><Icon name="lucide:utensils" class="h-3.5 w-3.5" /> Recipe</span
+        >
+        <span class="badge badge-ghost">{content.recipeCuisine ?? ''}</span>
+      </div>
+      <h1 class="text-3xl md:text-5xl font-bold tracking-tight mb-3">{content.title}</h1>
+      <p class="text-lg text-base-content/60 mb-4">{content.description}</p>
+      <div class="flex items-center gap-4 text-sm text-base-content/60 flex-wrap">
+        <RatingStars rating={4.7} count={1243} size="sm" />
+        <span class="flex items-center gap-1"
+          ><Icon name="lucide:clock" class="h-3.5 w-3.5" /> {recipe.totalTime}</span
+        >
+        <span class="flex items-center gap-1"
+          ><Icon name="lucide:flame" class="h-3.5 w-3.5" /> {recipe.difficulty}</span
+        >
+      </div>
+    </header>
+
+    <figure class="mb-8">
+      <img
+        src="https://images.pexels.com/photos/1438672/pexels-photo-1438672.jpeg?auto=compress&cs=tinysrgb&w=1400&h=700&fit=crop"
+        alt={content.title}
+        class="rounded-2xl w-full object-cover aspect-[2/1]"
+      />
+    </figure>
+
+    <div class="grid lg:grid-cols-[1fr_320px] gap-8">
+      <div class="min-w-0">
+        <IngredientList
+          ingredients={ingredients}
+          servings={parseInt(recipe.servings, 10) || undefined}
+        />
+        <div class="mt-10">
+          <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
+            <Icon name="lucide:list-ordered" class="h-6 w-6" /> Instructions
+          </h2>
+          <div class="prose-vedify"><slot /></div>
+        </div>
+        <div class="mt-8"><TagList tags={content.tags} /></div>
+        <div class="my-8"><InteractionGroup /></div>
+        <div class="mt-12"><CommentSection /></div>
+      </div>
+      <aside class="space-y-6 lg:sticky lg:top-24 lg:self-start">
+        <RecipeMeta recipe={recipe} />
+        <NutritionFacts nutrients={nutrition} />
+        <AdSlot variant="sidebar" />
+        <AuthorCard
+          name={resolvedAuthor.name}
+          role={resolvedAuthor.role ?? 'Italian Cuisine Specialist'}
+          bio={resolvedAuthor.bio ??
+            'Trained in Bologna. Believes risotto is a meditation, not a recipe.'}
+          avatar={resolvedAuthor.avatar ??
+            'https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop'}
+        />
+      </aside>
+    </div>
+  </div>
+</ContentLayout>

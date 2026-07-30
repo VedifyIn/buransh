@@ -1,0 +1,50 @@
+---
+import { Icon } from 'astro-icon/components';
+
+interface Props {
+  size?: 'sm' | 'md';
+}
+
+const { size = 'md' } = Astro.props;
+
+const sizes: Record<string, string> = {
+  sm: 'btn-sm btn-circle',
+  md: 'btn-circle',
+};
+
+const iconSizes: Record<string, string> = {
+  sm: 'h-3.5 w-3.5',
+  md: 'h-4 w-4',
+};
+---
+
+<button id="theme-toggle" class={`btn btn-ghost ${sizes[size]}`} aria-label="Toggle theme">
+  <Icon name="lucide:sun" class={`${iconSizes[size]} theme-icon-light`} />
+  <Icon name="lucide:moon" class={`${iconSizes[size]} theme-icon-dark hidden`} />
+</button>
+
+<style>
+  [data-theme='vedify-dark'] .theme-icon-light {
+    display: none;
+  }
+  [data-theme='vedify-dark'] .theme-icon-dark {
+    display: inline-flex;
+  }
+  [data-theme='vedify'] .theme-icon-light {
+    display: inline-flex;
+  }
+  [data-theme='vedify'] .theme-icon-dark {
+    display: none;
+  }
+</style>
+
+<script>
+  const toggle = document.getElementById('theme-toggle');
+  const root = document.documentElement;
+  toggle?.addEventListener('click', () => {
+    const current = root.getAttribute('data-theme');
+    const next = current === 'vedify-dark' ? 'vedify' : 'vedify-dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('daisyui-theme', next);
+  });
+</script>

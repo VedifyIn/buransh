@@ -1,0 +1,22 @@
+---
+import ContentMeta from '@/components/organisms/ContentMeta.astro';
+
+interface Props {
+  author: string;
+  published: string;
+  readTime: string;
+  views?: string;
+  words?: string;
+}
+
+const { author, published, readTime, views, words } = Astro.props;
+const items = [
+  { icon: 'user', label: 'Author', value: author },
+  { icon: 'calendar', label: 'Published', value: published },
+  { icon: 'clock', label: 'Read time', value: readTime },
+  ...(views ? [{ icon: 'eye', label: 'Views', value: views }] : []),
+  ...(words ? [{ icon: 'type', label: 'Word count', value: words }] : []),
+];
+---
+
+<ContentMeta items={items} title="Article Details" />

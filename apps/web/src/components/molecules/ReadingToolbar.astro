@@ -1,0 +1,98 @@
+---
+import Icon from '@/components/atoms/Icon.astro';
+import ThemeToggle from '@/components/atoms/ThemeToggle.astro';
+import FontToggle from '@/components/atoms/FontToggle.astro';
+import SizeSelector from '@/components/atoms/SizeSelector.astro';
+
+interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+
+const DIM_MODES = ['default', 'sepia', 'slate', 'charcoal'] as const;
+type DimMode = (typeof DIM_MODES)[number];
+
+const DIM_MODE_LABELS: Record<DimMode, string> = {
+  default: 'Default',
+  sepia: 'Sepia',
+  slate: 'Slate',
+  charcoal: 'Charcoal',
+};
+---
+
+<div class={`dropdown dropdown-end ${className}`}>
+  <button tabindex="0" role="button" class="btn btn-ghost btn-circle" aria-label="Reading settings">
+    <Icon name="lucide:settings" size="sm" />
+  </button>
+  <div
+    tabindex="0"
+    class="dropdown-content z-50 card w-72 shadow-lg bg-base-100 rounded-box mt-2 border border-base-300"
+  >
+    <div class="card-body p-4 space-y-4">
+      <div class="card-title text-base gap-2">
+        <Icon name="lucide:type" size="sm" />
+        Reading Settings
+      </div>
+      <div>
+        <label class="text-xs text-base-content/60 font-medium">Font Family</label>
+        <div class="mt-1"><FontToggle /></div>
+      </div>
+      <div>
+        <label class="text-xs text-base-content/60 font-medium">Text Size</label>
+        <div class="mt-1"><SizeSelector /></div>
+      </div>
+      <div>
+        <label class="text-xs text-base-content/60 font-medium">Reading Mode</label>
+        <div class="mt-1">
+          <button id="dim-mode-toggle" class="btn btn-ghost btn-sm w-full justify-start gap-2">
+            <Icon name="lucide:eye" size="sm" />
+            <span id="dim-mode-label">Default</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const DIM_MODES = ['default', 'sepia', 'slate', 'charcoal'] as const;
+  const DIM_MODE_LABELS: Record<string, string> = {
+    default: 'Default',
+    sepia: 'Sepia',
+    slate: 'Slate',
+    charcoal: 'Charcoal',
+  };
+
+  const dimToggle = document.getElementById('dim-mode-toggle');
+  const dimLabel = document.getElementById('dim-mode-label');
+
+  function getCurrentDimMode(): string {
+    return document.documentElement.getAttribute('data-dim-mode') || 'default';
+  }
+
+  function setDimMode(mode: string) {
+    if (mode === 'default') {
+      document.documentElement.removeAttribute('data-dim-mode');
+      localStorage.removeItem('vedify-dim-mode');
+    } else {
+      document.documentElement.setAttribute('data-dim-mode', mode);
+      localStorage.setItem('vedify-dim-mode', mode);
+    }
+    if (dimLabel) {
+      dimLabel.textContent = DIM_MODE_LABELS[mode] || mode;
+    }
+  }
+
+  if (dimToggle) {
+    const saved = localStorage.getItem('vedify-dim-mode') || 'default';
+    setDimMode(saved);
+
+    dimToggle.addEventListener('click', () => {
+      const current = getCurrentDimMode();
+      const idx = DIM_MODES.indexOf(current as (typeof DIM_MODES)[number]);
+      const next = DIM_MODES[(idx + 1) % DIM_MODES.length];
+      setDimMode(next);
+    });
+  }
+</script>
